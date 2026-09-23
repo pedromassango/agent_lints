@@ -124,6 +124,13 @@ other error, so an agent that checks its work sees the violation, reads the
 message and fixes it, the same way it fixes a type error. The `AGENTS.md`
 line above covers the rest.
 
+**Why this over a skill or an `AGENTS.md` rule?** Instructions are advice.
+An agent can skip them, forget them halfway through a long task, or decide the
+case at hand is an exception. A lint rule is checked by a program on the code
+that was actually written, every time, and reported as an error the agent has
+to clear before its work is done. Keep the skill for the why and the taste;
+put the must-haves in `agent_lints.yaml`.
+
 **Why not `custom_lint`?** It is the right tool for rules you want to write in
 Dart. agent_lints is for rules you would rather write in five lines of YAML,
 with output an agent can act on without reading your code.
