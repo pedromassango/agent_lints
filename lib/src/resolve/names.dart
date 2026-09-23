@@ -78,3 +78,11 @@ String? packageOfUri(String? uri) {
   if (uri.startsWith('dart:')) return uri;
   return null;
 }
+
+/// `lib/core/ui.dart` in package `app` -> `package:app/core/ui.dart`.
+/// Null for files outside `lib/` or when the package name is unknown.
+String? packagePathOf(String? relativePath, String? packageName) {
+  if (relativePath == null || packageName == null) return null;
+  if (!relativePath.startsWith('lib/')) return null;
+  return 'package:$packageName/${relativePath.substring(4)}';
+}

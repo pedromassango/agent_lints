@@ -208,7 +208,7 @@ suppress nothing are reported as `unused_ignore` (info). With
 
 `{{rule}}` `{{severity}}` `{{file}}` `{{line}}` `{{col}}` `{{found}}`
 `{{name}}` `{{short_name}}` `{{package}}` `{{library}}` `{{type}}`
-`{{receiver}}` `{{uri}}` `{{resolved_path}}` `{{arg}}` `{{value}}`
+`{{receiver}}` `{{uri}}` `{{resolved_path}}` `{{package_path}}` `{{denied}}` `{{arg}}` `{{value}}`
 `{{args.<name|index>}}` `{{allowed}}` `{{closest}}` `{{closest.name}}`
 `{{enclosing_class}}` `{{enclosing_function}}` `{{ancestor}}`
 `{{use_instead}}` `{{docs}}` `{{description}}` `{{vars.x}}` `{{values.x}}`

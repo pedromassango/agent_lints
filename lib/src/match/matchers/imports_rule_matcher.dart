@@ -103,6 +103,7 @@ class ImportsRuleMatcher extends Matcher {
       'package': ?pkg,
       'library': ?resolvedUri,
       'resolved_path': ?resolvedPath,
+      'package_path': ?packagePathOf(resolvedPath, ctx.packageName),
       'denied': hit.describe(),
       'use_instead': ?replaceWith,
     });

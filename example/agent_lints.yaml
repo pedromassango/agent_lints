@@ -50,7 +50,7 @@ rules:
 
   no_relative_imports:
     imports: { deny: [relative] }
-    message: "Use package imports: {{uri}} -> package:agent_lints_example/{{resolved_path}}"
+    message: "Use package imports: {{uri}} -> {{package_path}}"
 
   screens_named_screen:
     files: [lib/features/**]
