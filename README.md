@@ -3,9 +3,10 @@
 Agent-first custom lint for Dart and Flutter.
 
 Your project rules live in one `agent_lints.yaml`. Humans and coding agents add
-a rule by editing YAML, and the same tool checks the code from the CLI with
-output written for agents to self-correct in one pass. An analyzer plugin for
-`dart analyze` and IDEs is in progress.
+a rule by editing YAML, and the same tool checks the code from the CLI (with
+output written for agents to self-correct in one pass) and inside
+`dart analyze`, `flutter analyze` and your IDE through the official analyzer
+plugin API.
 
 ```yaml
 # agent_lints.yaml
@@ -62,6 +63,21 @@ dart run agent_lints --show-suppressed  # audit // ignore comments
 
 Output defaults to `human` on a terminal and `agent` when piped, so agents
 calling it from a shell get the rich form.
+
+### IDE and `dart analyze`
+
+Enable the analyzer plugin in the **root** `analysis_options.yaml` (Dart 3.10+):
+
+```yaml
+plugins:
+  agent_lints: ^0.1.0
+```
+
+Every rule id becomes a diagnostic code with the severity from the YAML, so
+`// ignore: agent_lints/<rule>` works and `analysis_options.yaml` can override
+a rule with `plugins: agent_lints: diagnostics: <rule>: error`. Restart the
+analysis server after changing the `plugins:` section. The first analysis
+compiles the plugin, which takes a few seconds.
 
 ## The config file
 
