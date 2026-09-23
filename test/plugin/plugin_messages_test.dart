@@ -46,11 +46,11 @@ void main() {
       PluginMessages.correction(
         _v(useInstead: 'AppLog', suggest: 'AppLog.d(x)', docs: 'docs/log.md'),
       ),
-      'Use AppLog.  Suggest: AppLog.d(x)  See docs/log.md.  Explain: dart run agent_lints explain r',
+      'Use AppLog.  Suggest: AppLog.d(x)  See docs/log.md.  Run explain to learn more: dart run agent_lints explain r',
     );
     expect(
       PluginMessages.correction(_v()),
-      'Explain: dart run agent_lints explain r',
+      'Run explain to learn more: dart run agent_lints explain r',
     );
   });
 }
