@@ -105,7 +105,7 @@ class VariableMatcher extends Matcher {
         captures.putIfAbsent(e.key, () => e.value);
       }
     }
-    return MatchResult(node, captures);
+    return MatchResult(node, captures, node.name);
   }
 
   @override

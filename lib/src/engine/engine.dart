@@ -177,8 +177,8 @@ class Engine {
 
   Violation buildViolation(CompiledRule rule, MatchResult r, MatchContext ctx) {
     final node = r.node;
-    final start = ctx.lineInfo.getLocation(node.offset);
-    final end = ctx.lineInfo.getLocation(node.end);
+    final start = ctx.lineInfo.getLocation(r.reportOffset);
+    final end = ctx.lineInfo.getLocation(r.reportOffset + r.reportLength);
     final found = ctx.sourceOf(node);
     final data = <String, String>{
       ...rule.vars.map((k, v) => MapEntry('vars.$k', v)),
@@ -202,8 +202,8 @@ class Engine {
       severity: rule.severity,
       path: ctx.path,
       relativePath: ctx.relativePath,
-      offset: node.offset,
-      length: node.length,
+      offset: r.reportOffset,
+      length: r.reportLength,
       line: start.lineNumber,
       column: start.columnNumber,
       endLine: end.lineNumber,

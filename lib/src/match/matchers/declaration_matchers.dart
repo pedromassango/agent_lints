@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 
@@ -56,8 +57,10 @@ class FunctionMatcher extends Matcher {
     final bool constant;
     final NodeList<Annotation> metadata;
     final Element? element;
+    final Token nameToken;
     switch (node) {
       case MethodDeclaration():
+        nameToken = node.name;
         declaredName = node.name.lexeme;
         declaredKind = node.isGetter
             ? 'getter'
@@ -70,6 +73,7 @@ class FunctionMatcher extends Matcher {
         metadata = node.metadata;
         element = node.declaredFragment?.element;
       case FunctionDeclaration():
+        nameToken = node.name;
         declaredName = node.name.lexeme;
         declaredKind = node.isGetter
             ? 'getter'
@@ -84,6 +88,7 @@ class FunctionMatcher extends Matcher {
         metadata = node.metadata;
         element = node.declaredFragment?.element;
       case ConstructorDeclaration():
+        nameToken = node.name ?? node.typeName?.token ?? node.beginToken;
         declaredName = node.name?.lexeme ?? 'new';
         declaredKind = 'constructor';
         body = node.body;
@@ -121,7 +126,7 @@ class FunctionMatcher extends Matcher {
       'name': resolved?.qualified ?? declaredName,
       'short_name': declaredName,
       'kind': declaredKind,
-    });
+    }, nameToken);
   }
 
   @override
@@ -180,8 +185,10 @@ class ClassMatcher extends Matcher {
     final bool abstract;
     final NodeList<Annotation> metadata;
     final NodeList<ClassMember> members;
+    final Token nameToken;
     switch (node) {
       case ClassDeclaration():
+        nameToken = node.namePart.typeName;
         declaredName = node.namePart.typeName.lexeme;
         declaredKind = 'class';
         element = node.declaredFragment?.element;
@@ -189,6 +196,7 @@ class ClassMatcher extends Matcher {
         metadata = node.metadata;
         members = node.body.members;
       case MixinDeclaration():
+        nameToken = node.name;
         declaredName = node.name.lexeme;
         declaredKind = 'mixin';
         element = node.declaredFragment?.element;
@@ -196,6 +204,7 @@ class ClassMatcher extends Matcher {
         metadata = node.metadata;
         members = node.body.members;
       case EnumDeclaration():
+        nameToken = node.namePart.typeName;
         declaredName = node.namePart.typeName.lexeme;
         declaredKind = 'enum';
         element = node.declaredFragment?.element;
@@ -203,6 +212,7 @@ class ClassMatcher extends Matcher {
         metadata = node.metadata;
         members = node.body.members;
       case ExtensionDeclaration():
+        nameToken = node.name ?? node.beginToken;
         declaredName = node.name?.lexeme ?? '';
         declaredKind = 'extension';
         element = null;
@@ -239,17 +249,25 @@ class ClassMatcher extends Matcher {
       final mixins = element?.mixins ?? const <InterfaceType>[];
       if (!mixins.any(mixesIn!.matches)) return null;
     }
+    // Fields are FieldDeclarations holding VariableDeclarations; test both so
+    // `variable:` matchers work in has/lacks.
+    final candidates = <AstNode>[
+      for (final member in members) ...[
+        member,
+        if (member is FieldDeclaration) ...member.fields.variables,
+      ],
+    ];
     for (final m in has) {
-      if (!members.any((member) => m.match(member, ctx) != null)) return null;
+      if (!candidates.any((c) => m.match(c, ctx) != null)) return null;
     }
     for (final m in lacks) {
-      if (members.any((member) => m.match(member, ctx) != null)) return null;
+      if (candidates.any((c) => m.match(c, ctx) != null)) return null;
     }
     return MatchResult(node, {
       'name': declaredName,
       'short_name': declaredName,
       'kind': declaredKind,
-    });
+    }, nameToken);
   }
 
   @override
