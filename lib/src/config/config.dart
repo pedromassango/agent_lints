@@ -62,6 +62,7 @@ class AgentLintsConfig {
     '**/*.mocks.dart',
     'build/**',
     '.dart_tool/**',
+    'agent_lints_examples_tmp/**',
   ];
 
   /// Whether [absolutePath] is inside the project and selected by include/exclude.

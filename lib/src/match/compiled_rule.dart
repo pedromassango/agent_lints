@@ -42,6 +42,24 @@ class CompiledRule {
 
   bool get enabled => severity != Severity.off;
 
+  CompiledRule copyWith({List<Glob>? files, List<Glob>? exclude}) =>
+      CompiledRule(
+        id: id,
+        kind: kind,
+        severity: severity,
+        matcher: matcher,
+        message: message,
+        description: description,
+        suggest: suggest,
+        useInstead: useInstead,
+        docs: docs,
+        vars: vars,
+        files: files ?? this.files,
+        exclude: exclude ?? this.exclude,
+        examplesBad: examplesBad,
+        examplesGood: examplesGood,
+      );
+
   /// Whether the rule runs on a project-relative posix path.
   bool appliesTo(String relativePath) {
     if (files.isNotEmpty && !files.any((g) => g.matches(relativePath))) {
