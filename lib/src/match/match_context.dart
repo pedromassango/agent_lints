@@ -50,8 +50,12 @@ class MatchContext {
   /// for messages.
   String sourceOf(AstNode node, {int max = 120}) {
     final buffer = StringBuffer();
-    var cursor = node.offset;
-    for (var t = node.beginToken; ; t = t.next!) {
+    // Skip doc comments and annotations on declarations.
+    final first = node is AnnotatedNode
+        ? node.firstTokenAfterCommentAndMetadata
+        : node.beginToken;
+    var cursor = first.offset;
+    for (var t = first; ; t = t.next!) {
       for (Token? c = t.precedingComments; c != null; c = c.next) {
         if (c.offset >= cursor && c.end <= node.end) {
           buffer.write(content.substring(cursor, c.offset));
