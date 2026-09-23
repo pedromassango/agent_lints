@@ -22,6 +22,7 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed .
       - run: dart analyze --fatal-infos
       - run: dart test --exclude-tags e2e
+      - run: dart run agent_lints --format agent
 
   e2e:
     runs-on: ubuntu-latest

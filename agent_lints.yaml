@@ -1,0 +1,35 @@
+# agent_lints checks itself. Run: dart run agent_lints
+version: 1
+include: [lib/**, bin/**]
+fail_on: warning
+
+rules:
+  no_print:
+    severity: error
+    match: { call: { name: print, package: dart:core } }
+    message: "Write to the injected StringSink (out / err), never print."
+    examples:
+      bad: ["void f() { print('x'); }"]
+      good: ["void f(StringSink out) { out.writeln('x'); }"]
+
+  no_analyzer_internals:
+    severity: error
+    imports:
+      deny: ["package:analyzer/src/**", "package:analysis_server_plugin/src/**"]
+    message: "{{uri}} is an implementation import; analyzer upgrades must stay mechanical. Use the public API."
+
+  no_dart_io_in_engine:
+    severity: error
+    imports:
+      from: [lib/src/engine/**, lib/src/match/**, lib/src/resolve/**, lib/src/report/**]
+      deny: ["dart:io"]
+    message: "The engine must not touch the file system; it runs inside the analysis server. Keep dart:io in lib/src/cli and lib/src/plugin."
+
+  matchers_declare_keys:
+    files: [lib/src/match/matchers/**]
+    exclude: [lib/src/match/matchers/logic_matchers.dart, lib/src/match/matchers/context_matcher.dart, lib/src/match/matchers/element_filter.dart, lib/src/match/matchers/imports_rule_matcher.dart]
+    match:
+      class:
+        extends: Matcher
+        lacks: { variable: { name: keys, static: true } }
+    message: "{{name}} must declare `static const keys` so explain --kinds and the YAML validator know its options."
