@@ -25,6 +25,14 @@ through the `publish` workflow, which uses pub.dev's automated publishing
 The new version is listed on pub.dev within a few minutes; the package page
 shows the README of the latest version.
 
+## Manual trigger
+
+The same workflow has a **Run workflow** button under **Actions, publish**.
+Use it to retry a failed publish or to publish a tag that was pushed without
+a GitHub Release. In the **Use workflow from** dropdown pick the tag
+(`v0.1.3`), not `main`: pub.dev only accepts uploads whose workflow ran on a
+ref matching `v{{version}}`.
+
 ## One-time setup
 
 - pub.dev: package **Admin** tab, **Automated publishing**, enable

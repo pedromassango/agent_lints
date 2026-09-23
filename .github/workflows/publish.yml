@@ -8,6 +8,9 @@ name: publish
 on:
   release:
     types: [published]
+  # Manual trigger: Actions -> publish -> Run workflow, and pick the tag
+  # (vX.Y.Z) under "Use workflow from". pub.dev rejects runs from a branch.
+  workflow_dispatch:
 
 jobs:
   publish:
