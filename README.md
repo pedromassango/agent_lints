@@ -71,8 +71,7 @@ ancestors, file size and design tokens are all a few lines of YAML.
 ```yaml
 # pubspec.yaml
 dev_dependencies:
-  agent_lints:
-    git: https://github.com/pedromassango/agent_lints
+  agent_lints: ^0.1.0
 ```
 
 ```
@@ -86,16 +85,12 @@ For the IDE and `dart analyze`, enable the plugin in the root
 
 ```yaml
 plugins:
-  agent_lints:
-    git:
-      url: https://github.com/pedromassango/agent_lints
-      ref: main
+  agent_lints: ^0.1.0
 ```
 
 If your project pins an older `analyzer` (through `freezed`,
 `json_serializable`, ...), skip the pubspec entry: the plugin resolves on its
-own, and the CLI installs with
-`dart pub global activate --source git https://github.com/pedromassango/agent_lints`.
+own, and the CLI installs with `dart pub global activate agent_lints`.
 
 ## Documentation
 

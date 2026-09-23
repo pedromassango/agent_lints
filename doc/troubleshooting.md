@@ -21,7 +21,7 @@ lag behind. You have two options that do not touch `pubspec.yaml`:
    package.
 2. Install the CLI globally:
    ```
-   dart pub global activate --source git https://github.com/pedromassango/agent_lints
+   dart pub global activate agent_lints
    agent_lints
    ```
 

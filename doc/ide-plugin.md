@@ -16,17 +16,15 @@ options files):
 
 ```yaml
 plugins:
-  agent_lints:
-    git:
-      url: https://github.com/pedromassango/agent_lints
-      ref: main
+  agent_lints: ^0.1.0
 ```
 
 Alternatives:
 
 ```yaml
 plugins:
-  agent_lints: ^0.1.0            # from pub.dev, once published
+  agent_lints:
+    git: { url: https://github.com/pedromassango/agent_lints, ref: main }  # unreleased main
   agent_lints:
     path: ../agent_lints         # a local checkout while developing agent_lints itself
 ```
@@ -69,7 +67,7 @@ agent_lints needs: the plugin still works. See
 ```yaml
 plugins:
   agent_lints:
-    git: { url: https://github.com/pedromassango/agent_lints, ref: main }
+    version: ^0.1.0
     diagnostics:
       small_widget_files: error   # error | warning | info | ignore
 ```

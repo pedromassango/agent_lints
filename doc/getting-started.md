@@ -15,8 +15,7 @@ supported Flutter stable works).
 ```yaml
 # pubspec.yaml
 dev_dependencies:
-  agent_lints:
-    git: https://github.com/pedromassango/agent_lints   # or a pub.dev version once published
+  agent_lints: ^0.1.0
 ```
 
 ```
@@ -32,7 +31,7 @@ dart pub get   # or flutter pub get
 ### Globally (CLI without touching pubspec)
 
 ```
-dart pub global activate --source git https://github.com/pedromassango/agent_lints
+dart pub global activate agent_lints
 agent_lints            # instead of `dart run agent_lints`
 ```
 
@@ -105,10 +104,17 @@ enable plugins):
 
 ```yaml
 plugins:
+  agent_lints: ^0.1.0
+```
+
+To run the latest unreleased version instead, use a git source:
+
+```yaml
+plugins:
   agent_lints:
     git:
       url: https://github.com/pedromassango/agent_lints
-      ref: main          # pin a commit or tag for reproducible builds
+      ref: main          # or a commit / tag
 ```
 
 Restart the analysis server (VS Code: "Dart: Restart Analysis Server";
