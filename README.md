@@ -27,6 +27,10 @@ After making changes, run `dart run agent_lints` and fix all errors.
 
 ## Example
 
+A rule that bans `print` in favour of the project's logger. The `match:` block
+says what to look for (a call to `print` from `dart:core`); the other fields
+are what a violator gets told.
+
 ```yaml
 # agent_lints.yaml
 version: 1
@@ -38,6 +42,10 @@ rules:
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
 ```
+
+Running the linter on a project that calls `print` prints one block per
+violation, with the code it found, the rule's message, a snippet to paste and
+the comment that would silence it:
 
 ```
 $ dart run agent_lints
