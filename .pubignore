@@ -3,3 +3,4 @@ example/pubspec.lock
 example/build/
 tool/
 .github/
+agent_lints_examples_tmp/
