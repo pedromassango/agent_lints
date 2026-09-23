@@ -1,0 +1,88 @@
+import 'package:test/test.dart';
+
+import '../support/test_project.dart';
+
+void main() {
+  group('inside / contains', () {
+    const code = '''
+import 'package:flutter/material.dart';
+Widget a() => Column(children: [ListView(children: const [])]);
+Widget b() => Column(children: [ListView(shrinkWrap: true)]);
+Widget c() => Column(children: [Padding(padding: EdgeInsets.zero, child: ListView())]);
+Widget d() => Builder(builder: (_) => ListView());
+Widget e() => Scaffold(body: SafeArea(child: Text('x')));
+Widget f() => Scaffold(body: Text('y'));
+''';
+
+    test('direct ancestor through argument lists and list literals', () async {
+      final v = await lint(
+        rule('listview_in_column', '''
+    match:
+      new: { name: ListView, args: { shrinkWrap: { present: false } } }
+      inside: { new: { name: Column }, direct: true }
+    message: "line {{line}} in {{ancestor}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(v.map((x) => x.message), ['line 2 in Column']);
+    });
+
+    test('non-direct ancestor and not_inside', () async {
+      final anywhere = await lint(
+        rule('r', '''
+    match:
+      new: { name: ListView }
+      inside: { new: { name: Column } }
+    message: "{{line}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(anywhere.map((x) => x.message), ['2', '3', '4']);
+      final notInside = await lint(
+        rule('r', '''
+    match:
+      new: { name: ListView }
+      not_inside: { new: { name: Column } }
+    message: "{{line}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(notInside.map((x) => x.message), ['5']);
+    });
+
+    test('inside a function by name', () async {
+      final v = await lint(
+        rule('r', '''
+    match:
+      new: { name: ListView }
+      inside: { function: { name: d } }
+    message: "{{line}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(v.map((x) => x.message), ['5']);
+    });
+
+    test('contains / not_contains and expr: not', () async {
+      final v = await lint(
+        rule('scaffold_body_safearea', '''
+    match:
+      new: { name: Scaffold, args: { body: { expr: { not: { new: { name: SafeArea } } } } } }
+    message: "{{line}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(v.map((x) => x.message), ['7']);
+      final contains = await lint(
+        rule('r', '''
+    match:
+      new: { name: Scaffold }
+      not_contains: { new: { name: SafeArea } }
+    message: "{{line}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(contains.map((x) => x.message), ['7']);
+    });
+  });
+}
