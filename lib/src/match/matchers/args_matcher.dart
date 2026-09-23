@@ -249,18 +249,27 @@ class ArgsMatcher {
     return ArgsMatcher(out);
   }
 
+  /// Records `args.<name>` / `args.<index>` captures for every argument.
+  static void captureAll(
+    ArgumentList args,
+    MatchContext ctx,
+    Map<String, String> captures,
+  ) {
+    for (final e in _enumerate(args)) {
+      captures['args.${e.key}'] = ctx.sourceOf(e.expression);
+      if (e.index != null) {
+        captures['args.${e.index}'] = ctx.sourceOf(e.expression);
+      }
+    }
+  }
+
   bool matches(
     ArgumentList args,
     MatchContext ctx,
     Map<String, String> captures,
   ) {
     final entries = _enumerate(args);
-    for (final e in entries) {
-      captures['args.${e.key}'] = ctx.sourceOf(e.expression);
-      if (e.index != null) {
-        captures['args.${e.index}'] = ctx.sourceOf(e.expression);
-      }
-    }
+    captureAll(args, ctx, captures);
     for (final MapEntry(key: key, value: c) in constraints.entries) {
       if (key == '*') {
         final hit = entries.any(

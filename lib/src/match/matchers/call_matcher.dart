@@ -88,6 +88,7 @@ class CallMatcher extends Matcher {
     if (args != null && !args!.matches(argumentList, ctx, captures)) {
       return null;
     }
+    ArgsMatcher.captureAll(argumentList, ctx, captures);
     if (receiver != null) {
       captures['receiver'] = ctx.sourceOf(receiver, max: 60);
     }

@@ -1,2 +1,75 @@
+# Rules for the example app. Each rule is exercised by lib/ and asserted by
+# expected_violations.json in the e2e tests.
 version: 1
-rules: {}
+include: [lib/**]
+fail_on: warning
+docs: README.md
+
+values:
+  spacing:
+    - 4
+    - { value: 8, name: AppSpacing.sm }
+    - { value: 16, name: AppSpacing.md }
+    - { value: 24, name: AppSpacing.lg }
+
+rules:
+  no_print:
+    severity: error
+    exclude: [lib/core/log.dart]
+    description: Use the app logger instead of print
+    match: { call: { name: print, package: dart:core } }
+    use_instead: AppLog.d(...) from package:agent_lints_example/core/log.dart
+    suggest: "AppLog.d({{args.0}})"
+    message: "`print` ships to release logs. Use {{use_instead}}."
+
+  no_gesture_detector_for_taps:
+    description: Tap targets need ripple and semantics
+    match:
+      new:
+        name: GestureDetector
+        package: [flutter, material_ui]
+        args: { onTap: { present: true }, onPanUpdate: { present: false } }
+    use_instead: InkWell (ripple + semantics)
+    suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
+    message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
+
+  features_no_material:
+    severity: error
+    description: Features use the app's own widget barrel
+    files: [lib/features/**]
+    match: { import: "package:flutter/material.dart" }
+    use_instead: package:agent_lints_example/core/ui.dart
+    message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
+
+  http_only_in_network:
+    severity: error
+    exclude: [lib/network/**]
+    match: { import: { package: http } }
+    message: "Only lib/network may talk HTTP. Use ApiClient from lib/network/api_client.dart."
+
+  no_setstate_in_build:
+    severity: error
+    match:
+      call: { name: State.setState }
+      inside: { function: { name: build } }
+    message: "setState inside build() causes rebuild loops. Move it to a handler or initState."
+
+  spacing_on_scale:
+    match:
+      new:
+        name: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+        package: [flutter, material_ui]
+        args: { "*": { literal: num, not_in: $spacing } }
+    message: "{{value}} passed to {{name}}({{arg}}) is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
+    suggest: "{{name}}({{arg}}: {{closest.name}})"
+
+  no_palette_colors:
+    banned: { name: "Colors.*", package: [flutter, material_ui] }
+    use_instead: Theme.of(context).colorScheme
+    message: "{{name}} is a raw palette color. Use {{use_instead}}."
+
+  listview_in_column:
+    match:
+      new: { name: ListView, args: { shrinkWrap: { present: false } } }
+      inside: { new: { name: Column }, direct: true }
+    message: "ListView directly inside {{ancestor}} needs shrinkWrap: true or an Expanded wrapper."

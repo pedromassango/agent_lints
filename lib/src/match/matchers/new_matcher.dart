@@ -39,6 +39,7 @@ class NewMatcher extends Matcher {
     if (args != null && !args!.matches(node.argumentList, ctx, captures)) {
       return null;
     }
+    ArgsMatcher.captureAll(node.argumentList, ctx, captures);
     final t = node.staticType;
     if (t != null) captures['type'] = t.getDisplayString();
     return MatchResult(node, captures);

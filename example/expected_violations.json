@@ -1,0 +1,42 @@
+[
+  {
+    "rule": "http_only_in_network",
+    "file": "lib/data/cart_repo.dart",
+    "line": 1
+  },
+  {
+    "rule": "no_gesture_detector_for_taps",
+    "file": "lib/features/cart/cart_tile.dart",
+    "line": 8
+  },
+  {
+    "rule": "spacing_on_scale",
+    "file": "lib/features/cart/cart_tile.dart",
+    "line": 12
+  },
+  {
+    "rule": "features_no_material",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 1
+  },
+  {
+    "rule": "no_print",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 19
+  },
+  {
+    "rule": "no_setstate_in_build",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 24
+  },
+  {
+    "rule": "no_palette_colors",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 32
+  },
+  {
+    "rule": "listview_in_column",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 35
+  }
+]

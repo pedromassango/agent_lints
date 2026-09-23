@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/source/line_info.dart';
 
 import '../config/values.dart';
@@ -29,10 +30,22 @@ class MatchContext {
   String get content => result.content;
   String get path => result.path;
 
-  /// Source text of [node], whitespace collapsed, truncated for messages.
+  /// Source text of [node] without comments, whitespace collapsed, truncated
+  /// for messages.
   String sourceOf(AstNode node, {int max = 120}) {
-    var text = content.substring(node.offset, node.end);
-    text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final buffer = StringBuffer();
+    var cursor = node.offset;
+    for (var t = node.beginToken; ; t = t.next!) {
+      for (Token? c = t.precedingComments; c != null; c = c.next) {
+        if (c.offset >= cursor && c.end <= node.end) {
+          buffer.write(content.substring(cursor, c.offset));
+          cursor = c.end;
+        }
+      }
+      if (t == node.endToken || t.next == null) break;
+    }
+    buffer.write(content.substring(cursor, node.end));
+    var text = buffer.toString().replaceAll(RegExp(r'\s+'), ' ').trim();
     if (text.length > max) text = '${text.substring(0, max - 1)}…';
     return text;
   }
