@@ -38,14 +38,28 @@ class Engine {
   List<Violation> analyzeUnit(
     ResolvedUnitResult result, {
     String? relativePath,
+  }) => analyzeCompilationUnit(
+    unit: result.unit,
+    content: result.content,
+    path: result.path,
+    relativePath: relativePath,
+  );
+
+  /// Analyzes an already resolved [unit]. Used by the analyzer plugin, which
+  /// receives units without a [ResolvedUnitResult].
+  List<Violation> analyzeCompilationUnit({
+    required CompilationUnit unit,
+    required String content,
+    required String path,
+    String? relativePath,
   }) {
-    final raw = _analyzeUnit(result, relativePath: relativePath);
-    final rel = relativePath ?? config.relativePath(result.path) ?? result.path;
+    final rel = relativePath ?? config.relativePath(path) ?? path;
+    final raw = _analyze(unit: unit, content: content, path: path, rel: rel);
     final suppressions = Suppressions.parse(
-      result.unit,
-      result.lineInfo,
+      unit,
+      unit.lineInfo,
       config.rules.map((r) => r.id).toSet(),
-      content: result.content,
+      content: content,
     );
     if (suppressions.comments.isEmpty) return raw;
     final kept = <Violation>[];
@@ -63,7 +77,9 @@ class Engine {
           _synthetic(
             ignoreWithoutReasonRule,
             Severity.warning,
-            result,
+            unit,
+            content,
+            path,
             rel,
             c,
             'ignore comment has no reason. Write `-- <why>` after the rule id.',
@@ -76,7 +92,9 @@ class Engine {
         _synthetic(
           unusedIgnoreRule,
           Severity.info,
-          result,
+          unit,
+          content,
+          path,
           rel,
           c,
           'ignore comment for ${c.rules.join(', ')} suppresses nothing; remove it.',
@@ -90,18 +108,20 @@ class Engine {
   Violation _synthetic(
     String ruleId,
     Severity severity,
-    ResolvedUnitResult result,
+    CompilationUnit unit,
+    String content,
+    String path,
     String rel,
     IgnoreComment c,
     String message,
   ) {
-    final loc = result.lineInfo.getLocation(c.offset);
-    final lineEnd = result.content.indexOf('\n', c.offset);
-    final length = (lineEnd == -1 ? result.content.length : lineEnd) - c.offset;
+    final loc = unit.lineInfo.getLocation(c.offset);
+    final lineEnd = content.indexOf('\n', c.offset);
+    final length = (lineEnd == -1 ? content.length : lineEnd) - c.offset;
     return Violation(
       ruleId: ruleId,
       severity: severity,
-      path: result.path,
+      path: path,
       relativePath: rel,
       offset: c.offset,
       length: length,
@@ -109,19 +129,22 @@ class Engine {
       column: loc.columnNumber,
       endLine: loc.lineNumber,
       endColumn: loc.columnNumber + length,
-      found: result.content.substring(c.offset, c.offset + length),
+      found: content.substring(c.offset, c.offset + length),
       message: message,
       shortMessage: message,
     );
   }
 
-  List<Violation> _analyzeUnit(
-    ResolvedUnitResult result, {
-    String? relativePath,
+  List<Violation> _analyze({
+    required CompilationUnit unit,
+    required String content,
+    required String path,
+    required String rel,
   }) {
-    final rel = relativePath ?? config.relativePath(result.path) ?? result.path;
     final ctx = MatchContext(
-      result: result,
+      unit: unit,
+      content: content,
+      path: path,
       relativePath: rel,
       rootPath: config.rootPath,
       packageName: config.packageName,
@@ -135,7 +158,7 @@ class Engine {
     if (active.isEmpty) return const [];
     final violations = <Violation>[];
     final seen = <String>{};
-    result.unit.accept(
+    unit.accept(
       KindVisitor((kind, node) {
         final rules = active[kind];
         if (rules == null) return;

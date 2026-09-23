@@ -8,14 +8,35 @@ import '../config/values.dart';
 /// Everything a matcher may need about the file being analyzed.
 class MatchContext {
   MatchContext({
-    required this.result,
+    required this.unit,
+    required this.content,
+    required this.path,
     required this.relativePath,
     required this.rootPath,
     required this.packageName,
     required this.values,
-  });
+  }) : lineInfo = unit.lineInfo;
 
-  final ResolvedUnitResult result;
+  MatchContext.fromResult(
+    ResolvedUnitResult result, {
+    required String relativePath,
+    required String rootPath,
+    required String? packageName,
+    required Map<String, ValueList> values,
+  }) : this(
+         unit: result.unit,
+         content: result.content,
+         path: result.path,
+         relativePath: relativePath,
+         rootPath: rootPath,
+         packageName: packageName,
+         values: values,
+       );
+
+  final CompilationUnit unit;
+  final String content;
+  final String path;
+  final LineInfo lineInfo;
 
   /// Project-relative posix path of the file.
   final String relativePath;
@@ -24,11 +45,6 @@ class MatchContext {
   /// The analyzed package's name; used by `package: project`.
   final String? packageName;
   final Map<String, ValueList> values;
-
-  CompilationUnit get unit => result.unit;
-  LineInfo get lineInfo => result.lineInfo;
-  String get content => result.content;
-  String get path => result.path;
 
   /// Source text of [node] without comments, whitespace collapsed, truncated
   /// for messages.
