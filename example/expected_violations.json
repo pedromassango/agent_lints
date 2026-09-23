@@ -5,9 +5,9 @@
     "line": 1
   },
   {
-    "rule": "no_gesture_detector_for_taps",
+    "rule": "no_relative_imports",
     "file": "lib/features/cart/cart_tile.dart",
-    "line": 8
+    "line": 1
   },
   {
     "rule": "spacing_on_scale",
@@ -20,23 +20,38 @@
     "line": 1
   },
   {
+    "rule": "no_relative_imports",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 5
+  },
+  {
     "rule": "no_print",
     "file": "lib/features/home/home_screen.dart",
-    "line": 19
+    "line": 20
   },
   {
     "rule": "no_setstate_in_build",
     "file": "lib/features/home/home_screen.dart",
-    "line": 24
+    "line": 25
   },
   {
     "rule": "no_palette_colors",
     "file": "lib/features/home/home_screen.dart",
-    "line": 32
+    "line": 33
   },
   {
     "rule": "listview_in_column",
     "file": "lib/features/home/home_screen.dart",
-    "line": 35
+    "line": 36
+  },
+  {
+    "rule": "screens_named_screen",
+    "file": "lib/features/home/home_screen.dart",
+    "line": 44
+  },
+  {
+    "rule": "no_relative_imports",
+    "file": "lib/main.dart",
+    "line": 3
   }
 ]

@@ -46,7 +46,7 @@ void main() {
     final out = result.stdout as String;
     expect(
       out,
-      contains('[error] no_print  lib/features/home/home_screen.dart:19:5'),
+      contains('[error] no_print  lib/features/home/home_screen.dart:20:5'),
     );
     expect(out, contains("suggest  AppLog.d('home loaded')"));
     expect(out, contains('Closest: 8 (AppSpacing.sm)'));
@@ -60,6 +60,6 @@ void main() {
   test('validate reports the config as valid', () async {
     final result = await runCli(['validate']);
     expect(result.exitCode, 0);
-    expect(result.stdout, contains('agent_lints.yaml is valid: 8 rules'));
+    expect(result.stdout, contains('agent_lints.yaml is valid: 10 rules'));
   });
 }

@@ -118,6 +118,7 @@ lib/a.dart:2:3 • error • `print` ships to release logs. • no_print
       'files_with_issues': 1,
       'duration_ms': 1234,
       'exit_code': 1,
+      'suppressed': 0,
     });
     final v = (json['violations'] as List).single as Map<String, Object?>;
     expect(v['rule'], 'no_print');

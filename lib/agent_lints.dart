@@ -16,5 +16,6 @@ export 'src/report/formatters/agent_formatter.dart';
 export 'src/report/formatters/formatter.dart';
 export 'src/report/formatters/human_formatter.dart';
 export 'src/report/formatters/json_formatter.dart';
+export 'src/report/formatters/sarif_formatter.dart';
 export 'src/report/run_result.dart';
 export 'src/report/violation.dart';

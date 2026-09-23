@@ -11,6 +11,7 @@ import '../../report/formatters/agent_formatter.dart';
 import '../../report/formatters/formatter.dart';
 import '../../report/formatters/human_formatter.dart';
 import '../../report/formatters/json_formatter.dart';
+import '../../report/formatters/sarif_formatter.dart';
 import '../../report/run_result.dart';
 import '../exit_codes.dart';
 import '../project_files.dart';
@@ -30,6 +31,16 @@ class CheckCommand extends Command<int> {
         help: 'Only check these files (project-relative or absolute).',
       )
       ..addMultiOption('rule', help: 'Only run these rule ids.')
+      ..addFlag(
+        'changed',
+        negatable: false,
+        help: 'Only check files changed or added since the last git commit.',
+      )
+      ..addFlag(
+        'show-suppressed',
+        negatable: false,
+        help: 'Also list violations silenced by // ignore comments.',
+      )
       ..addOption(
         'fail-on',
         allowed: ['error', 'warning', 'info', 'none'],
@@ -54,7 +65,7 @@ class CheckCommand extends Command<int> {
     final args = argResults!;
     final formatName =
         args['format'] as String? ?? (stdout.hasTerminal ? 'human' : 'agent');
-    final Formatter formatter = switch (formatName) {
+    Formatter formatter = switch (formatName) {
       'json' => JsonFormatter(),
       'human' => HumanFormatter(),
       _ => AgentFormatter(),
@@ -92,6 +103,7 @@ class CheckCommand extends Command<int> {
       );
       return ExitCodes.config;
     }
+    if (formatName == 'sarif') formatter = SarifFormatter(rules: config.rules);
     final failOnArg = args['fail-on'] as String?;
     final failOn = failOnArg == null
         ? config.failOn
@@ -117,6 +129,28 @@ class CheckCommand extends Command<int> {
     final only = (args['files'] as List<String>)
         .map((f) => p.normalize(p.absolute(p.join(project.rootPath, f))))
         .toSet();
+    if (args['changed'] == true) {
+      final changed = await _gitChangedFiles(project.rootPath);
+      if (changed == null) {
+        err.writeln('agent_lints: --changed needs a git repository.');
+        return ExitCodes.usage;
+      }
+      only.addAll(changed);
+      if (only.isEmpty) {
+        out.write(
+          formatter.format(
+            RunResult(
+              violations: const [],
+              filesChecked: 0,
+              duration: stopwatch.elapsed,
+              failOn: failOn,
+              configPath: project.configPath,
+            ),
+          ),
+        );
+        return ExitCodes.ok;
+      }
+    }
     final RunResult result;
     try {
       result = await ProjectChecker(
@@ -128,5 +162,32 @@ class CheckCommand extends Command<int> {
     }
     out.write(formatter.format(result));
     return result.exitCode;
+  }
+
+  /// Modified, staged and untracked `.dart` files, absolute. Null outside git.
+  static Future<Set<String>?> _gitChangedFiles(String root) async {
+    Future<List<String>> git(List<String> a) async {
+      final r = await Process.run('git', a, workingDirectory: root);
+      if (r.exitCode != 0) throw ProcessException('git', a, r.stderr as String);
+      return (r.stdout as String)
+          .split('\n')
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .toList();
+    }
+
+    try {
+      final top = (await git(['rev-parse', '--show-toplevel'])).single;
+      final files = [
+        ...await git(['diff', '--name-only', 'HEAD']),
+        ...await git(['ls-files', '--others', '--exclude-standard']),
+      ];
+      return files
+          .where((f) => f.endsWith('.dart'))
+          .map((f) => p.normalize(p.join(top, f)))
+          .toSet();
+    } on ProcessException {
+      return null;
+    }
   }
 }

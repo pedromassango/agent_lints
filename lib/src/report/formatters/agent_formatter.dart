@@ -23,6 +23,13 @@ class AgentFormatter extends Formatter {
       _block(b, v);
       b.writeln();
     }
+    if (result.showSuppressed && result.suppressed.isNotEmpty) {
+      b.writeln('suppressed by // ignore comments:');
+      for (final v in result.suppressed) {
+        b.writeln('  ${v.ruleId}  ${v.relativePath}:${v.line}  ${v.found}');
+      }
+      b.writeln();
+    }
     for (final w in result.configWarnings) {
       b.writeln('[warning] ${w.format()}');
     }

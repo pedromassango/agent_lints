@@ -29,6 +29,7 @@ class MessageTemplate {
     'receiver',
     'uri',
     'resolved_path',
+    'denied',
     'arg',
     'value',
     'allowed',

@@ -19,6 +19,7 @@ class ProjectChecker {
     Set<String> onlyFiles = const {},
     Severity? failOn,
     List<ConfigError> warnings = const [],
+    bool showSuppressed = false,
   }) async {
     final stopwatch = Stopwatch()..start();
     final engine = Engine(config);
@@ -50,6 +51,8 @@ class ProjectChecker {
       failOn: failOn ?? config.failOn,
       configPath: config.configPath,
       configWarnings: warnings,
+      suppressed: engine.suppressed,
+      showSuppressed: showSuppressed,
     );
   }
 }

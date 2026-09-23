@@ -43,9 +43,22 @@ rules:
 
   http_only_in_network:
     severity: error
-    exclude: [lib/network/**]
-    match: { import: { package: http } }
-    message: "Only lib/network may talk HTTP. Use ApiClient from lib/network/api_client.dart."
+    imports:
+      deny: [package:http/**, package:dio/**]
+      except: [lib/network/**]
+    message: "Only lib/network may talk HTTP ({{denied}}). Use ApiClient from lib/network/api_client.dart."
+
+  no_relative_imports:
+    imports: { deny: [relative] }
+    message: "Use package imports: {{uri}} -> package:agent_lints_example/{{resolved_path}}"
+
+  screens_named_screen:
+    files: [lib/features/**]
+    naming:
+      target: class
+      where: { extends: StatefulWidget }
+      pattern: "*Screen"
+    message: "{{name}} is a StatefulWidget under lib/features and must end with Screen."
 
   no_setstate_in_build:
     severity: error

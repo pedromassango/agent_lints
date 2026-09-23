@@ -52,9 +52,12 @@ dev_dependencies:
 Create `agent_lints.yaml` next to `pubspec.yaml`, then:
 
 ```
-dart run agent_lints            # check (default). Exit 1 when rules fail.
-dart run agent_lints validate   # validate the YAML only, exit 0/2
-dart run agent_lints --format json | agent | human
+dart run agent_lints                    # check (default). Exit 1 when rules fail.
+dart run agent_lints validate           # validate the YAML only, exit 0/2
+dart run agent_lints --format json      # also: agent | human | sarif
+dart run agent_lints --changed          # only files changed since the last commit
+dart run agent_lints --files lib/a.dart --rule no_print
+dart run agent_lints --show-suppressed  # audit // ignore comments
 ```
 
 Output defaults to `human` on a terminal and `agent` when piped, so agents
@@ -75,7 +78,7 @@ values:                        # named lists, referenced as $name in rules
 
 rules:
   <rule_id>:                   # snake_case; this is the diagnostic code
-    match: { ... }             # exactly one of: match | banned
+    match: { ... }             # exactly one of: match | banned | imports | naming
     severity: warning          # error | warning | info | off
     description: "one line"
     files: [lib/features/**]   # narrow this rule
@@ -102,6 +105,9 @@ text, a glob (`*Screen`, `package:flutter/**`), a regex (`/^_.*Impl$/`), a list
 | `ref` | a reference that is not a call (`Colors.red`, a tear-off) | `name`, `package`, `library`, `type` |
 | `function` | function / method / constructor declarations | `name`, `kind`, `returns`, `async`, `static`, `const`, `override`, `annotation` |
 | `class` | class / mixin / enum / extension declarations | `name`, `kind`, `extends`, `implements`, `mixes_in`, `abstract`, `annotation`, `has`, `lacks` |
+| `variable` | top-level variables, fields, locals | `name`, `scope: top_level\|field\|local`, `type`, `const`, `final`, `late`, `static`, `annotation`, `initializer` |
+| `literal` | int / double / string / bool / null / list / map literals | `kind`, `value`, `in`, `not_in`, `min`, `max`, `source`, `interpolated` |
+| `file` | the file itself (reported at line 1) | `name` (base name without `.dart`), `path` |
 
 **Names resolve against elements**, never source text:
 
@@ -149,8 +155,54 @@ match:
 `inside` walks up the syntax tree, so a widget returned from a helper method is
 not an ancestor.
 
-**Sugar:** `banned: Opacity` (string, list or `{name, package}`) expands to
-`any: [new, call, ref]` for that name.
+## Sugar kinds
+
+Three shorthands cover the rules teams write most. `explain` (coming) prints
+what they expand to.
+
+```yaml
+  no_opacity:
+    banned: [Opacity, .withOpacity]          # string, list or {name, package}
+    message: "{{name}} is banned."           # = any: [new, call, ref]
+
+  features_no_material:                      # layering: engine-native
+    imports:
+      from: [lib/features/**]                # files this applies to
+      deny:                                  # package/dart uri globs, `relative`,
+        - package:flutter/material.dart      # or project path globs (resolved
+        - lib/data/**                        # through relative imports too)
+        - relative
+      except: [lib/features/**/theme/**]
+      replace_with: package:app/ui/ui.dart   # feeds {{use_instead}}
+    message: "{{uri}} is not allowed here ({{denied}}). Import {{use_instead}}."
+
+  screens_named_screen:                      # naming: pattern or style
+    naming:
+      target: class                          # class | function | variable | file
+      where: { extends: StatelessWidget }    # body of that node kind
+      pattern: "*Screen"                     # or style: snake_case | camelCase | PascalCase | SCREAMING_SNAKE_CASE
+    files: [lib/screens/**]
+    message: "{{name}} must end with Screen."
+```
+
+## Suppressing a violation
+
+The comment syntax is the analyzer's, so the same comment will work for the
+IDE plugin:
+
+```dart
+// ignore: agent_lints/no_print -- one-off migration script
+print(report);
+print(report); // ignore: no_print
+
+// ignore_for_file: agent_lints/no_print
+```
+
+The `agent_lints/` prefix is optional on the CLI. A comment on its own line
+covers the next line; a trailing comment covers its own line. Ignores that
+suppress nothing are reported as `unused_ignore` (info). With
+`require_ignore_reason: true`, an ignore without `-- reason` is reported as
+`ignore_without_reason`.
 
 ## Placeholders
 
@@ -229,9 +281,8 @@ Every problem is reported at once, with the YAML path, position and a hint:
 
 ## Status
 
-Under active development. Coming next: inline suppression, `imports` and
-`naming` sugar, `variable` / `literal` matchers, SARIF output, the analyzer
-plugin, and `init` / `explain` commands.
+Under active development. Coming next: the analyzer plugin (`dart analyze` and
+IDE diagnostics), and the `init` / `explain` / `test` commands.
 
 ## License
 

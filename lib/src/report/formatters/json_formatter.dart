@@ -18,6 +18,7 @@ class JsonFormatter extends Formatter {
         'files_with_issues': result.filesWithIssues,
         'duration_ms': result.duration.inMilliseconds,
         'exit_code': result.exitCode,
+        'suppressed': result.suppressed.length,
       },
       'config_errors': [
         for (final e in result.configErrors)
@@ -30,6 +31,8 @@ class JsonFormatter extends Formatter {
           },
       ],
       'violations': [for (final v in result.violations) v.toJson()],
+      if (result.showSuppressed)
+        'suppressed': [for (final v in result.suppressed) v.toJson()],
     };
     return const JsonEncoder.withIndent('  ').convert(map);
   }

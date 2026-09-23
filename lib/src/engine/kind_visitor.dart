@@ -12,6 +12,12 @@ class KindVisitor extends RecursiveAstVisitor<void> {
   final void Function(NodeKind kind, AstNode node) onNode;
 
   @override
+  void visitCompilationUnit(CompilationUnit node) {
+    onNode(NodeKind.file, node);
+    super.visitCompilationUnit(node);
+  }
+
+  @override
   void visitImportDirective(ImportDirective node) {
     onNode(NodeKind.import, node);
     super.visitImportDirective(node);

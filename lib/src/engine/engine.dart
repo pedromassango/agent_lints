@@ -8,6 +8,7 @@ import '../match/matcher.dart';
 import '../match/node_kind.dart';
 import '../report/violation.dart';
 import 'kind_visitor.dart';
+import 'suppression.dart';
 
 /// Runs every enabled rule over resolved compilation units.
 class Engine {
@@ -26,7 +27,95 @@ class Engine {
   /// Node kinds at least one rule listens to.
   Set<NodeKind> get activeKinds => _byKind.keys.toSet();
 
+  /// Synthetic rule ids the engine itself reports.
+  static const unusedIgnoreRule = 'unused_ignore';
+  static const ignoreWithoutReasonRule = 'ignore_without_reason';
+
+  /// Violations silenced by `// ignore:` comments across all calls, for
+  /// auditing.
+  final List<Violation> suppressed = [];
+
   List<Violation> analyzeUnit(
+    ResolvedUnitResult result, {
+    String? relativePath,
+  }) {
+    final raw = _analyzeUnit(result, relativePath: relativePath);
+    final rel = relativePath ?? config.relativePath(result.path) ?? result.path;
+    final suppressions = Suppressions.parse(
+      result.unit,
+      result.lineInfo,
+      config.rules.map((r) => r.id).toSet(),
+      content: result.content,
+    );
+    if (suppressions.comments.isEmpty) return raw;
+    final kept = <Violation>[];
+    for (final v in raw) {
+      final ignore = suppressions.find(v.ruleId, v.line);
+      if (ignore == null) {
+        kept.add(v);
+      } else {
+        suppressed.add(v);
+      }
+    }
+    for (final c in suppressions.comments) {
+      if (config.requireIgnoreReason && c.used && (c.reason?.isEmpty ?? true)) {
+        kept.add(
+          _synthetic(
+            ignoreWithoutReasonRule,
+            Severity.warning,
+            result,
+            rel,
+            c,
+            'ignore comment has no reason. Write `-- <why>` after the rule id.',
+          ),
+        );
+      }
+    }
+    for (final c in suppressions.unused) {
+      kept.add(
+        _synthetic(
+          unusedIgnoreRule,
+          Severity.info,
+          result,
+          rel,
+          c,
+          'ignore comment for ${c.rules.join(', ')} suppresses nothing; remove it.',
+        ),
+      );
+    }
+    kept.sort((a, b) => a.offset.compareTo(b.offset));
+    return kept;
+  }
+
+  Violation _synthetic(
+    String ruleId,
+    Severity severity,
+    ResolvedUnitResult result,
+    String rel,
+    IgnoreComment c,
+    String message,
+  ) {
+    final loc = result.lineInfo.getLocation(c.offset);
+    final lineEnd = result.content.indexOf('\n', c.offset);
+    final length = (lineEnd == -1 ? result.content.length : lineEnd) - c.offset;
+    return Violation(
+      ruleId: ruleId,
+      severity: severity,
+      path: result.path,
+      relativePath: rel,
+      offset: c.offset,
+      length: length,
+      line: loc.lineNumber,
+      column: loc.columnNumber,
+      endLine: loc.lineNumber,
+      endColumn: loc.columnNumber + length,
+      found: result.content.substring(c.offset, c.offset + length),
+      message: message,
+      shortMessage: message,
+    );
+  }
+
+  List<Violation> _analyzeUnit(
     ResolvedUnitResult result, {
     String? relativePath,
   }) {

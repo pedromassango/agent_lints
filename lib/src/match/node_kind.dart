@@ -7,7 +7,8 @@ enum NodeKind {
   classDecl('class'),
   function('function'),
   variable('variable'),
-  literal('literal');
+  literal('literal'),
+  file('file');
 
   const NodeKind(this.key);
 

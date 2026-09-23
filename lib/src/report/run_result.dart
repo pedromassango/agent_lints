@@ -12,6 +12,8 @@ class RunResult {
     required this.configPath,
     this.configErrors = const [],
     this.configWarnings = const [],
+    this.suppressed = const [],
+    this.showSuppressed = false,
   });
 
   final List<Violation> violations;
@@ -21,6 +23,12 @@ class RunResult {
   final String configPath;
   final List<ConfigError> configErrors;
   final List<ConfigError> configWarnings;
+
+  /// Violations silenced by `// ignore:` comments.
+  final List<Violation> suppressed;
+
+  /// Whether formatters should list [suppressed].
+  final bool showSuppressed;
 
   int get errors =>
       violations.where((v) => v.severity == Severity.error).length;

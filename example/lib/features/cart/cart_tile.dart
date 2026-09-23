@@ -5,8 +5,8 @@ class CartTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: agent_lints/no_gesture_detector_for_taps -- custom hit area, tracked in #12
     return GestureDetector(
-      // no_gesture_detector_for_taps
       onTap: () {},
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10), // spacing_on_scale

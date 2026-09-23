@@ -5,6 +5,7 @@ import '../match/matcher.dart';
 import '../match/matcher_compiler.dart';
 import '../match/matchers/call_matcher.dart';
 import '../match/matchers/element_filter.dart';
+import '../match/matchers/imports_rule_matcher.dart';
 import '../match/matchers/logic_matchers.dart';
 import '../match/matchers/new_matcher.dart';
 import '../match/matchers/ref_matcher.dart';
@@ -221,10 +222,11 @@ class ConfigLoader {
 
     final message = template('message', messageText);
     final suggest = template('suggest', r.string('suggest'));
-    final files = (r.stringList('files') ?? const []).map(compileGlob).toList();
-    final exclude = (r.stringList('exclude') ?? const [])
+    var files = (r.stringList('files') ?? const []).map(compileGlob).toList();
+    var exclude = (r.stringList('exclude') ?? const [])
         .map(compileGlob)
         .toList();
+    String? useInstead = r.string('use_instead');
 
     final compiler = MatcherCompiler(errors, values);
     Matcher? matcher;
@@ -237,12 +239,32 @@ class ConfigLoader {
         );
       case 'banned':
         matcher = _banned(r, errors);
+      case 'imports':
+        final ir = r.child('imports');
+        if (ir != null) {
+          ir.rejectUnknownKeys(['from', 'deny', 'except', 'replace_with']);
+          final from = ir.stringList('from');
+          if (from != null) files = [...files, ...from.map(compileGlob)];
+          final except = ir.stringList('except');
+          if (except != null) {
+            exclude = [...exclude, ...except.map(compileGlob)];
+          }
+          final deny = ir.stringList('deny', required: true) ?? const [];
+          if (deny.isEmpty) {
+            ir.error('deny needs at least one entry', key: 'deny');
+          }
+          final replaceWith = ir.string('replace_with');
+          useInstead ??= replaceWith;
+          matcher = ImportsRuleMatcher(
+            deny: deny.map(ImportDeny.parse).toList(),
+            replaceWith: replaceWith,
+          );
+        }
+      case 'naming':
+        final nr = r.child('naming');
+        if (nr != null) matcher = _naming(nr, compiler, errors);
       default:
-        r.error(
-          'rule kind "$kind" is not supported yet',
-          key: kind,
-          hint: 'use match or banned',
-        );
+        r.error('unknown rule kind "$kind"', key: kind);
     }
     var examplesBad = const <String>[];
     var examplesGood = const <String>[];
@@ -261,13 +283,66 @@ class ConfigLoader {
       message: message,
       description: r.string('description'),
       suggest: suggest,
-      useInstead: r.string('use_instead'),
+      useInstead: useInstead,
       docs: r.string('docs'),
       vars: vars,
       files: files,
       exclude: exclude,
       examplesBad: examplesBad,
       examplesGood: examplesGood,
+    );
+  }
+
+  /// `naming:` expands to a declaration matcher whose name does NOT match
+  /// the wanted pattern.
+  Matcher? _naming(
+    YamlReader nr,
+    MatcherCompiler compiler,
+    ConfigErrors errors,
+  ) {
+    nr.rejectUnknownKeys(['target', 'where', 'pattern', 'style']);
+    final target = nr.string('target', required: true);
+    const targets = {'class', 'function', 'variable', 'file'};
+    final patternNode = nr.map.nodes['pattern'];
+    final style = nr.string('style');
+    const styles = {
+      'snake_case': r'/^[a-z][a-z0-9]*(_[a-z0-9]+)*$/',
+      'camelCase': r'/^_?[a-z][a-zA-Z0-9]*$/',
+      'PascalCase': r'/^_?[A-Z][a-zA-Z0-9]*$/',
+      'SCREAMING_SNAKE_CASE': r'/^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$/',
+    };
+    var ok = target != null;
+    if (target != null && !targets.contains(target)) {
+      nr.error(
+        'invalid target "$target"',
+        key: 'target',
+        hint: 'allowed: ${targets.join(', ')}',
+      );
+      ok = false;
+    }
+    if (patternNode == null && style == null) {
+      nr.error('naming needs "pattern" or "style"');
+      ok = false;
+    }
+    if (style != null && !styles.containsKey(style)) {
+      nr.error(
+        'invalid style "$style"',
+        key: 'style',
+        hint: 'allowed: ${styles.keys.join(', ')}',
+      );
+      ok = false;
+    }
+    if (!ok) return null;
+    final wanted = patternNode?.value ?? styles[style]!;
+    final where = nr.map.nodes['where'];
+    final body = <Object?, Object?>{
+      if (where is YamlMap) ...where.value,
+      'name': {'not': wanted},
+    };
+    return compiler.compile(
+      YamlMap.wrap({target: body}),
+      nr.path,
+      allowNot: false,
     );
   }
 

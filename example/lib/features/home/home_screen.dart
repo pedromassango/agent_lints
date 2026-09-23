@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart'; // features_no_material
 
-import '../../core/spacing.dart';
-import '../cart/cart_tile.dart';
+import 'package:agent_lints_example/core/spacing.dart';
+
+import '../cart/cart_tile.dart'; // no_relative_imports
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,4 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class Counter extends StatefulWidget {
+  // screens_named_screen
+  const Counter({super.key});
+
+  @override
+  State<Counter> createState() => _CounterState();
+}
+
+class _CounterState extends State<Counter> {
+  @override
+  Widget build(BuildContext context) => const Text('0');
 }

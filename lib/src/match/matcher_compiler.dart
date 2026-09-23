@@ -10,10 +10,13 @@ import 'matchers/call_matcher.dart';
 import 'matchers/context_matcher.dart';
 import 'matchers/declaration_matchers.dart';
 import 'matchers/element_filter.dart';
+import 'matchers/file_matcher.dart';
 import 'matchers/import_matcher.dart';
+import 'matchers/literal_matcher.dart';
 import 'matchers/logic_matchers.dart';
 import 'matchers/new_matcher.dart';
 import 'matchers/ref_matcher.dart';
+import 'matchers/variable_matcher.dart';
 import 'node_kind.dart';
 import 'patterns.dart';
 
@@ -47,6 +50,9 @@ class MatcherCompiler {
     'import': _compileImport,
     'function': _compileFunction,
     'class': _compileClass,
+    'variable': _compileVariable,
+    'literal': _compileLiteral,
+    'file': _compileFile,
   };
 
   Set<String> get nodeKeys => factories.keys.toSet();
@@ -349,6 +355,129 @@ class MatcherCompiler {
       ),
       has: c._matcherList(r.map, r, 'has'),
       lacks: c._matcherList(r.map, r, 'lacks'),
+    );
+  }
+
+  static Matcher? _compileVariable(
+    YamlNode body,
+    YamlReader parent,
+    String key,
+    MatcherCompiler c,
+  ) {
+    final r = YamlReader(
+      bodyAsMap(body, 'name'),
+      parent.childPath(key),
+      c.errors,
+    );
+    r.rejectUnknownKeys(VariableMatcher.keys);
+    final init = r.map.nodes['initializer'];
+    return VariableMatcher(
+      name: StringPattern.fromNode(r.map.nodes['name'], r, 'name'),
+      scope: StringPattern.fromNode(r.map.nodes['scope'], r, 'scope'),
+      type: TypePattern.fromNode(r.map.nodes['type'], r, 'type'),
+      isConst: r.boolean('const'),
+      isFinal: r.boolean('final'),
+      isLate: r.boolean('late'),
+      isStatic: r.boolean('static'),
+      annotation: StringPattern.fromNode(
+        r.map.nodes['annotation'],
+        r,
+        'annotation',
+      ),
+      initializer: init == null
+          ? null
+          : c.compile(init, r.childPath('initializer')),
+    );
+  }
+
+  static Matcher? _compileLiteral(
+    YamlNode body,
+    YamlReader parent,
+    String key,
+    MatcherCompiler c,
+  ) {
+    final r = YamlReader(
+      bodyAsMap(body, 'kind'),
+      parent.childPath(key),
+      c.errors,
+    );
+    r.rejectUnknownKeys(LiteralMatcher.keys);
+    final kind = r.string('kind');
+    const kinds = {
+      'int',
+      'double',
+      'num',
+      'string',
+      'bool',
+      'null',
+      'list',
+      'map',
+      'set',
+      'any',
+    };
+    if (kind != null && !kinds.contains(kind)) {
+      r.error(
+        'invalid literal kind "$kind"',
+        key: 'kind',
+        hint: 'allowed: ${kinds.join(', ')}',
+      );
+    }
+    List<Object?>? list(String k) {
+      final n = r.map.nodes[k];
+      if (n == null) return null;
+      if (n is YamlScalar &&
+          n.value is String &&
+          (n.value as String).startsWith(r'$')) {
+        final name = (n.value as String).substring(1);
+        final vl = c.values[name];
+        if (vl == null) {
+          r.error('unknown values list "\$$name"', key: k);
+          return null;
+        }
+        return vl.values.toList();
+      }
+      if (n is YamlList) return n.nodes.map((e) => e.value).toList();
+      r.error('expected a list or a \$values reference', key: k);
+      return null;
+    }
+
+    final sourceStr = r.string('source');
+    RegExp? source;
+    if (sourceStr != null) {
+      final pat = StringPattern.fromString(sourceStr);
+      source = pat is RegexPattern
+          ? pat.regex
+          : RegExp(RegExp.escape(sourceStr));
+    }
+    final minNode = r.map.nodes['min'];
+    final maxNode = r.map.nodes['max'];
+    return LiteralMatcher(
+      kind: kind,
+      value: r.map.nodes['value']?.value,
+      inList: list('in'),
+      notIn: list('not_in'),
+      min: minNode?.value is num ? minNode!.value as num : null,
+      max: maxNode?.value is num ? maxNode!.value as num : null,
+      source: source,
+      interpolated: r.boolean('interpolated'),
+    );
+  }
+
+  static Matcher? _compileFile(
+    YamlNode body,
+    YamlReader parent,
+    String key,
+    MatcherCompiler c,
+  ) {
+    final r = YamlReader(
+      bodyAsMap(body, 'name'),
+      parent.childPath(key),
+      c.errors,
+    );
+    r.rejectUnknownKeys(FileMatcher.keys);
+    return FileMatcher(
+      name: StringPattern.fromNode(r.map.nodes['name'], r, 'name'),
+      path: StringPattern.fromNode(r.map.nodes['path'], r, 'path'),
     );
   }
 }
