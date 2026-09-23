@@ -23,4 +23,7 @@ class AgentLintsPlugin extends Plugin {
     // A warning rule is enabled by default; the YAML decides what runs.
     registry.registerWarningRule(rule);
   }
+
+  @override
+  void start() => rule.discoverConfigs();
 }

@@ -34,6 +34,59 @@ class ConfigCache {
   /// All rule ids seen in any loaded config so far.
   final Set<String> knownRuleIds = {};
 
+  /// Directories never descended into by [discover].
+  static const skippedDirs = {
+    '.dart_tool',
+    'build',
+    'node_modules',
+    '.git',
+    '.idea',
+    '.vscode',
+    'ios',
+    'android',
+    'macos',
+    'linux',
+    'windows',
+    'web',
+    '.symlinks',
+  };
+
+  /// Loads every `agent_lints.yaml` reachable from [startDir]: the nearest
+  /// one walking up, plus any within [maxDepth] levels below. The analysis
+  /// server reads a rule's diagnostic codes before it hands the rule a file,
+  /// so configs must be known before the first library is analyzed.
+  List<LoadedProject> discover(String startDir, {int maxDepth = 4}) {
+    final found = <LoadedProject>[];
+    final above = Project.find(startDir: startDir);
+    if (above != null) {
+      final loaded = forRoot(above.rootPath, above);
+      if (loaded != null) found.add(loaded);
+    }
+    void walk(Directory dir, int depth) {
+      if (depth > maxDepth) return;
+      final List<FileSystemEntity> entries;
+      try {
+        entries = dir.listSync(followLinks: false);
+      } on FileSystemException {
+        return;
+      }
+      for (final e in entries) {
+        final name = p.basename(e.path);
+        if (e is File && name == Project.configFileName) {
+          final loaded = forRoot(dir.path);
+          if (loaded != null && !found.contains(loaded)) found.add(loaded);
+        } else if (e is Directory &&
+            !name.startsWith('.') &&
+            !skippedDirs.contains(name)) {
+          walk(e, depth + 1);
+        }
+      }
+    }
+
+    walk(Directory(startDir), 0);
+    return found;
+  }
+
   /// Returns the project for the config that governs [filePath], walking up
   /// from its directory. Null when no config exists.
   LoadedProject? forFile(String filePath) {

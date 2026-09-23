@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:analyzer/analysis_rule/analysis_rule.dart';
 import 'package:analyzer/analysis_rule/rule_context.dart';
 import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
@@ -51,11 +53,23 @@ class AgentLintsRule extends MultiAnalysisRule {
     );
   }
 
+  bool _discovered = false;
+
+  /// Loads configs reachable from the working directory so every rule id has
+  /// a code (with its severity) before the server analyzes the first file.
+  void discoverConfigs([String? fromDir]) {
+    _discovered = true;
+    for (final project in cache.discover(fromDir ?? Directory.current.path)) {
+      final config = project.config;
+      if (config != null) warmUp(config);
+    }
+  }
+
   @override
-  List<DiagnosticCode> get diagnosticCodes => [
-    configErrorCode,
-    ..._codes.values,
-  ];
+  List<DiagnosticCode> get diagnosticCodes {
+    if (!_discovered) discoverConfigs();
+    return [configErrorCode, ..._codes.values];
+  }
 
   /// Pre-creates codes for every rule so the server knows their severity
   /// before the first file is analyzed.
