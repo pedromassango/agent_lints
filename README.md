@@ -1,15 +1,10 @@
 # agent_lints
 
-Agent-first custom lint for Dart and Flutter. Project rules live in one
-`agent_lints.yaml`, written by humans or coding agents, and are checked from the
-CLI, `dart analyze` and your IDE.
+[![ci](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml/badge.svg)](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml)
 
-**Use it when** the conventions in your `AGENTS.md` / `CLAUDE.md` keep getting
-ignored: "no `print`", "features must not import `package:http`", "widget files
-stay under 100 lines", "colours come from `AppColors`". Each becomes a few lines
-of YAML instead of a hand-written analyzer plugin.
-
-## Example
+agent_lints turns the conventions in your `AGENTS.md` into lint rules. Rules are
+written in YAML, by humans or coding agents, and enforced from the CLI,
+`dart analyze` and your IDE. See the [documentation](docs/index.md).
 
 ```yaml
 # agent_lints.yaml
@@ -21,10 +16,6 @@ rules:
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
-
-  http_only_in_network:
-    imports: { deny: ["package:http/**"], except: [lib/network/**] }
-    message: "Only lib/network may talk HTTP."
 ```
 
 ```
@@ -34,47 +25,55 @@ $ dart run agent_lints
   why      `print` ships to release logs. Use AppLog.d(...).
   suggest  AppLog.d('home loaded')
   ignore   // ignore: agent_lints/no_print -- <reason>
-
-agent_lints: 1 error, 0 warnings, 0 info in 1 file  (14 files checked, 2.1s)
 ```
 
-## Setup
+Rules match the resolved AST, so imports, prefixes and `package:material_ui`
+versus `package:flutter` are handled for you. Layering (`imports`), naming
+(`naming`), arguments, ancestors, file size and more are covered in the
+[rule language](docs/rule-language.md); ready-made rules are in the
+[recipes](docs/recipes.md).
 
-1. Add the dependency (or install the CLI globally if your project pins an
-   older `analyzer`):
+## Usage
 
-   ```yaml
-   dev_dependencies:
-     agent_lints:
-       git: https://github.com/pedromassango/agent_lints
-   ```
+```yaml
+# pubspec.yaml
+dev_dependencies:
+  agent_lints:
+    git: https://github.com/pedromassango/agent_lints
+```
 
-2. Create the config and check the project:
+```
+dart run agent_lints init      # writes agent_lints.yaml
+dart run agent_lints           # checks the project; exit 1 on violations
+dart run agent_lints test      # runs each rule's bad/good examples
+```
 
-   ```
-   dart run agent_lints init
-   dart run agent_lints
-   ```
+To see rules in the IDE and in `dart analyze`, enable the plugin in the root
+`analysis_options.yaml` and restart the analysis server:
 
-3. Show rules in the IDE and in `dart analyze` by enabling the plugin in the
-   root `analysis_options.yaml`, then restart the analysis server:
+```yaml
+plugins:
+  agent_lints:
+    git:
+      url: https://github.com/pedromassango/agent_lints
+      ref: main
+```
 
-   ```yaml
-   plugins:
-     agent_lints:
-       git:
-         url: https://github.com/pedromassango/agent_lints
-         ref: main
-   ```
+If your project pins an older `analyzer` (through `freezed`,
+`json_serializable`, ...), skip the pubspec entry: the plugin resolves on its
+own, and the CLI installs with
+`dart pub global activate --source git https://github.com/pedromassango/agent_lints`.
 
-4. Point your agents at it: `dart run agent_lints init --agents-md --claude-skill`.
+## FAQ
 
-## Documentation
+**How do agents use it?** `dart run agent_lints init --agents-md --claude-skill`
+adds the loop to your agent instructions: run, fix from the `why` / `suggest`
+lines, add rules in YAML, prove them with `test`. See
+[agent workflow](docs/agent-workflow.md).
 
-Everything else is in [docs/index.md](docs/index.md): the
-[rule language](docs/rule-language.md), [configuration](docs/configuration.md),
-[CLI](docs/cli.md), [IDE plugin](docs/ide-plugin.md), [recipes](docs/recipes.md)
-and [troubleshooting](docs/troubleshooting.md).
+**Why not `custom_lint`?** It is a great way to write rules in Dart. agent_lints
+is for rules you would rather write in five lines of YAML, with output an
+agent can act on without reading your code.
 
 ## License
 
