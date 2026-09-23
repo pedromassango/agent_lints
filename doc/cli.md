@@ -40,7 +40,7 @@ omitted, no colour. Multi-line messages keep their line breaks under `why`.
   found    print('home loaded')
   why      `print` ships to release logs. Use AppLog.d(...).
   suggest  AppLog.d('home loaded')
-  docs     docs/logging.md
+  docs     doc/logging.md
   ignore   // ignore: agent_lints/no_print -- <reason>
 
 [warning] spacing_on_scale  lib/features/cart/cart_tile.dart:12:18
@@ -69,7 +69,7 @@ lib/features/home/home_screen.dart:19:5 • error • `print` ships to release l
 ```json
 {
   "version": 1,
-  "tool": { "name": "agent_lints", "version": "0.1.0-dev" },
+  "tool": { "name": "agent_lints", "version": "0.1.0" },
   "summary": { "errors": 1, "warnings": 0, "infos": 0, "files_checked": 148,
                "files_with_issues": 1, "duration_ms": 1900, "exit_code": 1, "suppressed": 0 },
   "config_errors": [],
@@ -82,7 +82,7 @@ lib/features/home/home_screen.dart:19:5 • error • `print` ships to release l
       "found": "print('home loaded')",
       "message": "...", "short": "...",
       "use_instead": "AppLog.d(...)", "suggest": "AppLog.d('home loaded')",
-      "docs": "docs/logging.md",
+      "docs": "doc/logging.md",
       "ignore": "// ignore: agent_lints/no_print -- <reason>",
       "context": { "name": "print", "package": "dart:core",
                    "enclosing_class": "_HomeScreenState", "enclosing_function": "initState" }

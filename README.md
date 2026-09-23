@@ -15,7 +15,7 @@ your existing code, no rewrite required.
 Hand this to your agent:
 
 ```
-Read https://github.com/pedromassango/agent_lints/blob/main/docs/getting-started.md and set up agent_lints in this project.
+Read https://github.com/pedromassango/agent_lints/blob/main/doc/getting-started.md and set up agent_lints in this project.
 ```
 
 Then add to `AGENTS.md`:
@@ -99,18 +99,18 @@ own, and the CLI installs with
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md)
-- [Configuration](docs/configuration.md)
-- [Rule language](docs/rule-language.md)
-- [Sugar kinds: banned, imports, naming](docs/sugar-kinds.md)
-- [Placeholders](docs/placeholders.md)
-- [CLI](docs/cli.md)
-- [IDE plugin](docs/ide-plugin.md)
-- [Suppressing violations](docs/suppressing.md)
-- [Agent workflow](docs/agent-workflow.md)
-- [Recipes](docs/recipes.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [How it works](docs/how-it-works.md)
+- [Getting started](doc/getting-started.md)
+- [Configuration](doc/configuration.md)
+- [Rule language](doc/rule-language.md)
+- [Sugar kinds: banned, imports, naming](doc/sugar-kinds.md)
+- [Placeholders](doc/placeholders.md)
+- [CLI](doc/cli.md)
+- [IDE plugin](doc/ide-plugin.md)
+- [Suppressing violations](doc/suppressing.md)
+- [Agent workflow](doc/agent-workflow.md)
+- [Recipes](doc/recipes.md)
+- [Troubleshooting](doc/troubleshooting.md)
+- [How it works](doc/how-it-works.md)
 
 ## FAQ
 

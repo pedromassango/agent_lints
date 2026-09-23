@@ -16,7 +16,7 @@ include: [lib/**]
 exclude: [lib/generated/**]
 fail_on: warning
 require_ignore_reason: false
-docs: docs/conventions.md
+docs: doc/conventions.md
 
 values:
   spacing: [4, 8, 12, 16, 24, 32]
@@ -103,7 +103,7 @@ rules:
     message: "..."               # required; {{placeholders}} allowed
     use_instead: "..."           # what to write instead; feeds {{use_instead}} and the IDE correction
     suggest: "..."               # a replacement snippet; placeholders allowed
-    docs: docs/ui.md#buttons     # path or URL; feeds {{docs}}
+    docs: doc/ui.md#buttons     # path or URL; feeds {{docs}}
     vars: { logger: AppLog }     # custom placeholders: {{vars.logger}}
     examples:                    # checked by `dart run agent_lints test`
       bad: ["..."]               # each must trigger this rule
