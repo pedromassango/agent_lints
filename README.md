@@ -78,8 +78,12 @@ own, and the CLI installs with
 
 ## FAQ
 
-**How do agents use it?** `dart run agent_lints init --agents-md --claude-skill`
-adds the loop to your agent instructions: run, fix from the `why` / `suggest`
+**How do agents use it?** Mostly without being told. With the plugin enabled
+a rule at `severity: error` shows up in `dart analyze` and the IDE like any
+other error, so an agent that checks its work sees the violation, reads the
+message and fixes it, the same way it fixes a type error.
+`dart run agent_lints init --agents-md --claude-skill` adds the rest of the
+loop to your agent instructions: run the CLI, fix from the `why` / `suggest`
 lines, add rules in YAML, prove them with `test`. See
 [agent workflow](docs/agent-workflow.md).
 
