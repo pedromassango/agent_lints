@@ -7,3 +7,4 @@ example/.flutter-plugins*
 example/build/
 .DS_Store
 agent_lints_examples_tmp/
+.idea/
