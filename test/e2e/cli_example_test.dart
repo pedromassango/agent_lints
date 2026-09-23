@@ -57,6 +57,25 @@ void main() {
     expect(out, contains('exit 1  (fail_on: warning)'));
   });
 
+  test('test runs the rules\' examples against the real Flutter SDK', () async {
+    final result = await runCli(['test']);
+    expect(result.exitCode, 0, reason: result.stdout.toString());
+    expect(
+      result.stdout,
+      contains('PASS  no_gesture_detector_for_taps  (1 bad, 1 good)'),
+    );
+    expect(result.stdout, contains('3 of 3 rules pass their examples.'));
+  });
+
+  test('explain prints the compiled contract', () async {
+    final result = await runCli(['explain', 'no_print']);
+    expect(result.exitCode, 0);
+    expect(
+      result.stdout,
+      contains('matches     call name=print package=dart:core'),
+    );
+  });
+
   test('validate reports the config as valid', () async {
     final result = await runCli(['validate']);
     expect(result.exitCode, 0);

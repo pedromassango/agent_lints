@@ -21,6 +21,9 @@ rules:
     use_instead: AppLog.d(...) from package:agent_lints_example/core/log.dart
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
+    examples:
+      bad: ["void f() { print('x'); }"]
+      good: ["import 'package:agent_lints_example/core/log.dart';\nvoid f() { AppLog.d('x'); }"]
 
   no_gesture_detector_for_taps:
     description: Tap targets need ripple and semantics
@@ -32,6 +35,16 @@ rules:
     use_instead: InkWell (ripple + semantics)
     suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
     message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
+    examples:
+      bad:
+        - |
+          import 'package:flutter/material.dart';
+          final w = GestureDetector(onTap: () {}, child: const Text('x'));
+      good:
+        - |
+          import 'package:flutter/material.dart';
+          final a = InkWell(onTap: () {}, child: const Text('x'));
+          final b = GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: const Text('drag'));
 
   features_no_material:
     severity: error
@@ -66,6 +79,24 @@ rules:
       call: { name: State.setState }
       inside: { function: { name: build } }
     message: "setState inside build() causes rebuild loops. Move it to a handler or initState."
+    examples:
+      bad:
+        - |
+          import 'package:flutter/material.dart';
+          class W extends StatefulWidget { const W({super.key}); @override State<W> createState() => _S(); }
+          class _S extends State<W> {
+            @override
+            Widget build(BuildContext context) { setState(() {}); return const Text('x'); }
+          }
+      good:
+        - |
+          import 'package:flutter/material.dart';
+          class W extends StatefulWidget { const W({super.key}); @override State<W> createState() => _S(); }
+          class _S extends State<W> {
+            void _tap() => setState(() {});
+            @override
+            Widget build(BuildContext context) => GestureDetector(onTap: _tap, onPanUpdate: (_) {});
+          }
 
   spacing_on_scale:
     match:
