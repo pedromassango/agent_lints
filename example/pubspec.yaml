@@ -1,0 +1,19 @@
+name: agent_lint_example
+description: Fixture app with deliberate violations used by agent_lint's end-to-end tests.
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.38.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  agent_lint:
+    path: ../
+
+flutter:
+  uses-material-design: true

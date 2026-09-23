@@ -1,0 +1,5 @@
+example/.dart_tool/
+example/pubspec.lock
+example/build/
+tool/
+.github/

@@ -1,0 +1,18 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - example/**
+    - tool/**
+  errors:
+    implementation_imports: error
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - unawaited_futures
+    - directives_ordering
