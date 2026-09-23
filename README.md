@@ -82,6 +82,11 @@ a rule with `plugins: agent_lints: diagnostics: <rule>: error`. Restart the
 analysis server after changing the `plugins:` section. The first analysis
 compiles the plugin, which takes a few seconds.
 
+The plugin finds `agent_lints.yaml` by walking up from the analysis server's
+working directory (the project or workspace folder) and up to four levels
+down, so monorepos with one config per package work. Edits to the YAML are
+picked up when a file is next analyzed.
+
 ## The config file
 
 ```yaml
