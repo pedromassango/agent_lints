@@ -1,10 +1,30 @@
 # agent_lints
 
+**Write project rules that agents can verify.**
+
 [![ci](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml/badge.svg)](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml)
 
-agent_lints turns the conventions in your `AGENTS.md` into lint rules. Rules are
-written in YAML, by humans or coding agents, and enforced from the CLI,
-`dart analyze` and your IDE. See the [documentation](docs/index.md).
+agent_lints is an agent-first linter for Dart and Flutter. You write the
+conventions of your project in `agent_lints.yaml`; when a human or an agent
+breaks one, the error says what is wrong, what to write instead and where to
+look. Rules run from the CLI, in `dart analyze` and in your IDE. Works with
+your existing code, no rewrite required.
+
+## Quickstart
+
+Hand this to your agent:
+
+```
+Read https://github.com/pedromassango/agent_lints/blob/main/docs/getting-started.md and set up agent_lints in this project.
+```
+
+Then add to `AGENTS.md`:
+
+```
+After making changes, run `dart run agent_lints` and fix all errors.
+```
+
+## Example
 
 ```yaml
 # agent_lints.yaml
@@ -27,8 +47,24 @@ $ dart run agent_lints
   ignore   // ignore: agent_lints/no_print -- <reason>
 ```
 
-Rules match the resolved AST, so imports, prefixes and `package:material_ui`
-versus `package:flutter` are handled for you.
+## Built for agents
+
+`dart analyze` tells an agent that something is wrong. agent_lints tells it
+what your project wanted instead:
+
+- **found**: the exact code that broke the rule.
+- **why**: the rule in your words, with the replacement spelled out.
+- **suggest**: a snippet it can paste.
+- **ignore**: the one comment that silences it, so it does not invent another.
+
+Errors in the YAML get the same treatment: every problem at once, with the
+line, the path and a did-you-mean. An agent can add a rule, run
+`dart run agent_lints validate` and `dart run agent_lints test`, and know it
+works before anyone reads the code.
+
+Rules match the resolved AST, so aliases, re-exports and `package:material_ui`
+versus `package:flutter` are handled for you. Layering, naming, arguments,
+ancestors, file size and design tokens are all a few lines of YAML.
 
 ## Usage
 
@@ -45,7 +81,7 @@ dart run agent_lints           # checks the project; exit 1 on violations
 dart run agent_lints test      # runs each rule's bad/good examples
 ```
 
-To see rules in the IDE and in `dart analyze`, enable the plugin in the root
+For the IDE and `dart analyze`, enable the plugin in the root
 `analysis_options.yaml` and restart the analysis server:
 
 ```yaml
@@ -78,18 +114,15 @@ own, and the CLI installs with
 
 ## FAQ
 
-**How do agents use it?** Mostly without being told. With the plugin enabled
-a rule at `severity: error` shows up in `dart analyze` and the IDE like any
+**Do agents need to be told about it?** Mostly not. With the plugin enabled a
+rule at `severity: error` shows up in `dart analyze` and the IDE like any
 other error, so an agent that checks its work sees the violation, reads the
-message and fixes it, the same way it fixes a type error.
-`dart run agent_lints init --agents-md --claude-skill` adds the rest of the
-loop to your agent instructions: run the CLI, fix from the `why` / `suggest`
-lines, add rules in YAML, prove them with `test`. See
-[agent workflow](docs/agent-workflow.md).
+message and fixes it, the same way it fixes a type error. The `AGENTS.md`
+line above covers the rest.
 
-**Why not `custom_lint`?** It is a great way to write rules in Dart. agent_lints
-is for rules you would rather write in five lines of YAML, with output an
-agent can act on without reading your code.
+**Why not `custom_lint`?** It is the right tool for rules you want to write in
+Dart. agent_lints is for rules you would rather write in five lines of YAML,
+with output an agent can act on without reading your code.
 
 ## License
 
