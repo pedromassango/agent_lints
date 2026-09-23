@@ -28,10 +28,7 @@ $ dart run agent_lints
 ```
 
 Rules match the resolved AST, so imports, prefixes and `package:material_ui`
-versus `package:flutter` are handled for you. Layering (`imports`), naming
-(`naming`), arguments, ancestors, file size and more are covered in the
-[rule language](docs/rule-language.md); ready-made rules are in the
-[recipes](docs/recipes.md).
+versus `package:flutter` are handled for you.
 
 ## Usage
 
@@ -63,6 +60,21 @@ If your project pins an older `analyzer` (through `freezed`,
 `json_serializable`, ...), skip the pubspec entry: the plugin resolves on its
 own, and the CLI installs with
 `dart pub global activate --source git https://github.com/pedromassango/agent_lints`.
+
+## Documentation
+
+- [Getting started](docs/getting-started.md)
+- [Configuration](docs/configuration.md)
+- [Rule language](docs/rule-language.md)
+- [Sugar kinds: banned, imports, naming](docs/sugar-kinds.md)
+- [Placeholders](docs/placeholders.md)
+- [CLI](docs/cli.md)
+- [IDE plugin](docs/ide-plugin.md)
+- [Suppressing violations](docs/suppressing.md)
+- [Agent workflow](docs/agent-workflow.md)
+- [Recipes](docs/recipes.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [How it works](docs/how-it-works.md)
 
 ## FAQ
 
