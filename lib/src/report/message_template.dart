@@ -31,6 +31,8 @@ class MessageTemplate {
     'resolved_path',
     'package_path',
     'denied',
+    'lines',
+    'code_lines',
     'arg',
     'value',
     'allowed',

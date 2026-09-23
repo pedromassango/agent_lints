@@ -478,6 +478,10 @@ class MatcherCompiler {
     return FileMatcher(
       name: StringPattern.fromNode(r.map.nodes['name'], r, 'name'),
       path: StringPattern.fromNode(r.map.nodes['path'], r, 'path'),
+      maxLines: r.integer('max_lines'),
+      minLines: r.integer('min_lines'),
+      maxCodeLines: r.integer('max_code_lines'),
+      minCodeLines: r.integer('min_code_lines'),
     );
   }
 }
