@@ -1,0 +1,19 @@
+# Publishes to pub.dev when a GitHub release is created for a tag `vX.Y.Z`.
+# pub.dev verifies the tag against the pubspec version (`v{{version}}`) and the
+# repository through GitHub's OIDC token, so no secrets are stored here.
+# One-time setup: pub.dev package Admin tab -> Automated publishing ->
+# enable "Publishing from GitHub Actions" for pedromassango/agent_lints.
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    permissions:
+      id-token: write
+      contents: read
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      environment: pub.dev

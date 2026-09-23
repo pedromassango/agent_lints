@@ -51,6 +51,7 @@ is handled like `package:flutter`.
 - [Recipes](recipes.md): ready-made rules for Flutter projects.
 - [Troubleshooting](troubleshooting.md): analyzer version conflicts, plugin not loading, stale builds.
 - [How it works](how-it-works.md): architecture and extension points.
+- [Releasing](releasing.md): how a version reaches pub.dev.
 
 ## Status
 

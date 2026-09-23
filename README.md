@@ -115,6 +115,7 @@ own, and the CLI installs with `dart pub global activate agent_lints`.
 - [Recipes](https://github.com/pedromassango/agent_lints/blob/main/doc/recipes.md)
 - [Troubleshooting](https://github.com/pedromassango/agent_lints/blob/main/doc/troubleshooting.md)
 - [How it works](https://github.com/pedromassango/agent_lints/blob/main/doc/how-it-works.md)
+- [Releasing](https://github.com/pedromassango/agent_lints/blob/main/doc/releasing.md)
 
 ## FAQ
 
