@@ -6,7 +6,7 @@ abstract final class ExitCodes {
   /// Violations at or above `fail_on` were found.
   static const violations = 1;
 
-  /// `agent_lint.yaml` is invalid; nothing was checked.
+  /// `agent_lints.yaml` is invalid; nothing was checked.
   static const config = 2;
 
   /// The project could not be analyzed (missing pubspec, pub get needed, ...).

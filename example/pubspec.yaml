@@ -1,5 +1,5 @@
-name: agent_lint_example
-description: Fixture app with deliberate violations used by agent_lint's end-to-end tests.
+name: agent_lints_example
+description: Fixture app with deliberate violations used by agent_lints's end-to-end tests.
 publish_to: none
 version: 0.0.1
 
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  agent_lint:
+  agent_lints:
     path: ../
 
 flutter:

@@ -1,14 +1,14 @@
-name: agent_lint
+name: agent_lints
 description: Agent-first custom lint for Dart and Flutter. Define project rules in YAML; get instructional diagnostics from the CLI, dart analyze and your IDE.
 version: 0.1.0-dev
-repository: https://github.com/pedromassango/agent_lint
+repository: https://github.com/pedromassango/agent_lints
 topics: [lint, analyzer, flutter, agents]
 
 environment:
   sdk: ^3.11.0
 
 executables:
-  agent_lint:
+  agent_lints:
 
 dependencies:
   analysis_server_plugin: ^0.3.19
