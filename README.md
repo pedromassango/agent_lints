@@ -134,7 +134,7 @@ text, a glob (`*Screen`, `package:flutter/**`), a regex (`/^_.*Impl$/`), a list
 | `class` | class / mixin / enum / extension declarations | `name`, `kind`, `extends`, `implements`, `mixes_in`, `abstract`, `annotation`, `has`, `lacks` |
 | `variable` | top-level variables, fields, locals | `name`, `scope: top_level\|field\|local`, `type`, `const`, `final`, `late`, `static`, `annotation`, `initializer` |
 | `literal` | int / double / string / bool / null / list / map literals | `kind`, `value`, `in`, `not_in`, `min`, `max`, `source`, `interpolated` |
-| `file` | the file itself (reported at line 1) | `name` (base name without `.dart`), `path` |
+| `file` | the file itself (reported at line 1) | `name` (base name without `.dart`), `path`, `max_lines`, `min_lines`, `max_code_lines`, `min_code_lines` (violation when outside the bound; code lines exclude blank and comment-only lines) |
 
 **Names resolve against elements**, never source text:
 
@@ -235,7 +235,7 @@ suppress nothing are reported as `unused_ignore` (info). With
 
 `{{rule}}` `{{severity}}` `{{file}}` `{{line}}` `{{col}}` `{{found}}`
 `{{name}}` `{{short_name}}` `{{package}}` `{{library}}` `{{type}}`
-`{{receiver}}` `{{uri}}` `{{resolved_path}}` `{{package_path}}` `{{denied}}` `{{arg}}` `{{value}}`
+`{{receiver}}` `{{uri}}` `{{resolved_path}}` `{{package_path}}` `{{denied}}` `{{lines}}` `{{code_lines}}` `{{arg}}` `{{value}}`
 `{{args.<name|index>}}` `{{allowed}}` `{{closest}}` `{{closest.name}}`
 `{{enclosing_class}}` `{{enclosing_function}}` `{{ancestor}}`
 `{{use_instead}}` `{{docs}}` `{{description}}` `{{vars.x}}` `{{values.x}}`
@@ -287,6 +287,12 @@ rules:
         args: { "*": { literal: num, not_in: $spacing } }
     message: "{{value}} is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
+
+  small_widget_files:
+    match:
+      file: { max_code_lines: 100 }
+      contains: { class: { extends: Widget } }
+    message: "{{file}} has {{code_lines}} lines of code; widget files stay under 100. Split it into smaller widgets."
 ```
 
 More in [`example/agent_lints.yaml`](example/agent_lints.yaml), which the
