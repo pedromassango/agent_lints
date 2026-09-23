@@ -32,6 +32,10 @@ agent_lints: 1 error, 0 warnings, 0 info in 1 file  (14 files checked, 2.1s)
 exit 1  (fail_on: warning). Run `dart run agent_lints explain <rule>` for the full contract.
 ```
 
+## Documentation
+
+The full documentation lives in [`docs/`](docs/index.md): [getting started](docs/getting-started.md), [configuration](docs/configuration.md), the [rule language](docs/rule-language.md), [sugar kinds](docs/sugar-kinds.md), [placeholders](docs/placeholders.md), the [CLI](docs/cli.md), the [IDE plugin](docs/ide-plugin.md), [suppressing violations](docs/suppressing.md), the [agent workflow](docs/agent-workflow.md), [recipes](docs/recipes.md), [troubleshooting](docs/troubleshooting.md) and [how it works](docs/how-it-works.md).
+
 ## Why
 
 Teams write conventions in `AGENTS.md` or `CLAUDE.md` ("never use `print`",
