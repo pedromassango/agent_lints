@@ -41,9 +41,10 @@ Check, in order:
 
 ## The IDE runs an old agent_lints
 
-With `ref: main` the server caches the checkout it made the first time. Change
-`ref` to a newer commit or tag; any change to the `plugins:` entry triggers a
-new resolution and build.
+The analysis server resolves the plugin once and caches the build. Bump the
+version constraint in the `plugins:` entry (`agent_lints: ^0.1.1`) and restart
+the analysis server; any change to that entry triggers a new resolution. With
+a git source, change `ref` to a newer commit or tag for the same effect.
 
 ## A rule fires as INFO on one file
 

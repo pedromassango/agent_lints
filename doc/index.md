@@ -54,4 +54,4 @@ is handled like `package:flutter`.
 
 ## Status
 
-Under active development. Source: <https://github.com/pedromassango/agent_lints>. MIT license.
+Under active development. Package: <https://pub.dev/packages/agent_lints>. Source: <https://github.com/pedromassango/agent_lints>. MIT license.

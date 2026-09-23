@@ -86,14 +86,16 @@ declare every rule id with its severity before the first file is analyzed;
 without it the analysis server would show the first file's diagnostics as
 INFO.
 
-## Pin the plugin version
+## Upgrading the plugin
 
-With `ref: main` the analysis server checks out `main` once and caches it. To
-pick up a newer agent_lints, change `ref` to a commit or tag: any edit to the
-`plugins:` section makes the server resolve and build again.
+The analysis server resolves the plugin once and caches the build. To pick up
+a newer agent_lints, raise the constraint in the `plugins:` entry and restart
+the analysis server; any edit to that entry makes the server resolve and build
+again. With a git source, change `ref` to a newer commit or tag instead.
 
 ```yaml
-      ref: 99adb72     # or a tag such as v0.1.0
+plugins:
+  agent_lints: ^0.1.1
 ```
 
 ## Performance

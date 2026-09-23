@@ -2,6 +2,7 @@
 
 **Write project rules that agents can verify.**
 
+[![pub package](https://img.shields.io/pub/v/agent_lints.svg)](https://pub.dev/packages/agent_lints)
 [![ci](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml/badge.svg)](https://github.com/pedromassango/agent_lints/actions/workflows/ci.yml)
 
 agent_lints is an agent-first linter for Dart and Flutter. You write the
