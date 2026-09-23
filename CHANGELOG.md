@@ -1,3 +1,7 @@
+## 0.1.1
+
+- README: absolute documentation links so they work on pub.dev.
+
 ## 0.1.0
 
 Initial release. Under active development: the rule language may still change before 1.0.

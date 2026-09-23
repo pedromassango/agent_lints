@@ -94,18 +94,18 @@ own, and the CLI installs with `dart pub global activate agent_lints`.
 
 ## Documentation
 
-- [Getting started](doc/getting-started.md)
-- [Configuration](doc/configuration.md)
-- [Rule language](doc/rule-language.md)
-- [Sugar kinds: banned, imports, naming](doc/sugar-kinds.md)
-- [Placeholders](doc/placeholders.md)
-- [CLI](doc/cli.md)
-- [IDE plugin](doc/ide-plugin.md)
-- [Suppressing violations](doc/suppressing.md)
-- [Agent workflow](doc/agent-workflow.md)
-- [Recipes](doc/recipes.md)
-- [Troubleshooting](doc/troubleshooting.md)
-- [How it works](doc/how-it-works.md)
+- [Getting started](https://github.com/pedromassango/agent_lints/blob/main/doc/getting-started.md)
+- [Configuration](https://github.com/pedromassango/agent_lints/blob/main/doc/configuration.md)
+- [Rule language](https://github.com/pedromassango/agent_lints/blob/main/doc/rule-language.md)
+- [Sugar kinds: banned, imports, naming](https://github.com/pedromassango/agent_lints/blob/main/doc/sugar-kinds.md)
+- [Placeholders](https://github.com/pedromassango/agent_lints/blob/main/doc/placeholders.md)
+- [CLI](https://github.com/pedromassango/agent_lints/blob/main/doc/cli.md)
+- [IDE plugin](https://github.com/pedromassango/agent_lints/blob/main/doc/ide-plugin.md)
+- [Suppressing violations](https://github.com/pedromassango/agent_lints/blob/main/doc/suppressing.md)
+- [Agent workflow](https://github.com/pedromassango/agent_lints/blob/main/doc/agent-workflow.md)
+- [Recipes](https://github.com/pedromassango/agent_lints/blob/main/doc/recipes.md)
+- [Troubleshooting](https://github.com/pedromassango/agent_lints/blob/main/doc/troubleshooting.md)
+- [How it works](https://github.com/pedromassango/agent_lints/blob/main/doc/how-it-works.md)
 
 ## FAQ
 
