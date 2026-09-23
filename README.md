@@ -53,8 +53,11 @@ dev_dependencies:
 Create `agent_lints.yaml` next to `pubspec.yaml`, then:
 
 ```
+dart run agent_lints init               # starter agent_lints.yaml (+ --plugin --agents-md --claude-skill)
 dart run agent_lints                    # check (default). Exit 1 when rules fail.
 dart run agent_lints validate           # validate the YAML only, exit 0/2
+dart run agent_lints explain <rule>     # the compiled contract of a rule; --kinds for the rule language
+dart run agent_lints test               # run each rule's bad/good examples
 dart run agent_lints --format json      # also: agent | human | sarif
 dart run agent_lints --changed          # only files changed since the last commit
 dart run agent_lints --files lib/a.dart --rule no_print
@@ -104,6 +107,9 @@ rules:
     suggest: "..."             # replacement snippet, placeholders allowed
     docs: docs/ui.md#buttons
     vars: { logger: AppLog }   # {{vars.logger}}
+    examples:                  # checked by `dart run agent_lints test`
+      bad: ["void f() { print(1); }"]
+      good: ["void f() {}"]
 ```
 
 ## `match:` — the rule language
@@ -280,6 +286,23 @@ rules:
 
 More in [`example/agent_lints.yaml`](example/agent_lints.yaml), which the
 end-to-end tests run against the app in `example/`.
+
+## The agent loop
+
+1. `dart run agent_lints explain --kinds` prints the rule language, generated
+   from the matcher code so it never drifts.
+2. The agent edits `agent_lints.yaml`.
+3. `dart run agent_lints validate` reports every problem with a position and a
+   hint.
+4. `dart run agent_lints test` proves the rule: each `examples.bad` snippet
+   must trigger it and each `examples.good` must not. Snippets are real Dart
+   files resolved against the project's dependencies, and file scoping is
+   ignored for them.
+5. `dart run agent_lints` on the code, then fix from the `why` / `suggest`
+   lines.
+
+`dart run agent_lints init --agents-md --claude-skill` writes this loop into
+`AGENTS.md` / `CLAUDE.md` and a Claude Code skill so agents find it.
 
 ## Config errors are written for agents too
 
