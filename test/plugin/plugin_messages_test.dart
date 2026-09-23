@@ -50,7 +50,7 @@ void main() {
     );
     expect(
       PluginMessages.correction(_v()),
-      'Run explain to learn more: dart run agent_lints explain r',
+      'Run explain to learn more: `dart run agent_lints explain r`',
     );
   });
 }
