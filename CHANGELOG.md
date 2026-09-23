@@ -1,6 +1,6 @@
-## 0.1.0-dev
+## 0.1.0
 
-Initial development.
+Initial release. Under active development: the rule language may still change before 1.0.
 
 - Rules in `agent_lints.yaml`: `match:` (node kinds `new`, `call`, `ref`,
   `import`, `class`, `function`, `variable`, `literal`, `file`; `args`
@@ -12,5 +12,7 @@ Initial development.
   `--rule`, `--show-suppressed`), `validate`, `explain`, `test`, `init`.
 - Analyzer plugin for `dart analyze`, `flutter analyze` and IDEs; every rule
   id is a diagnostic code with the configured severity.
+- `file` matcher with line and code-line bounds; `explain`, `test` and `init`
+  commands; documentation under `docs/`.
 - `// ignore: agent_lints/<rule> -- reason` suppression, `unused_ignore` and
   `ignore_without_reason` reports.
