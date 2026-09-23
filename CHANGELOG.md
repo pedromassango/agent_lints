@@ -1,3 +1,7 @@
+## 0.1.2
+
+- README: context around the example.
+
 ## 0.1.1
 
 - README: absolute documentation links so they work on pub.dev.
