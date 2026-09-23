@@ -18,7 +18,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
-      - run: dart pub get
+      - run: dart pub get --no-example
       - run: dart format --output=none --set-exit-if-changed .
       - run: dart analyze --fatal-infos
       - run: dart test --exclude-tags e2e
@@ -30,7 +30,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: dart pub get
+      - run: dart pub get --no-example
       - run: flutter pub get
         working-directory: example
       - run: dart test --tags e2e
@@ -40,5 +40,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
-      - run: dart pub get
+      - run: dart pub get --no-example
       - run: dart pub publish --dry-run
