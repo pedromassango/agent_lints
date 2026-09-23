@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 
 import 'commands/check_command.dart';
+import 'commands/explain_command.dart';
+import 'commands/init_command.dart';
+import 'commands/test_command.dart';
 import 'commands/validate_command.dart';
 import 'exit_codes.dart';
 import 'version.dart';
@@ -28,7 +31,10 @@ class AgentLintsRunner {
             help: 'Print the version.',
           )
           ..addCommand(CheckCommand(out: out, err: err))
-          ..addCommand(ValidateCommand(out: out, err: err));
+          ..addCommand(ValidateCommand(out: out, err: err))
+          ..addCommand(ExplainCommand(out: out, err: err))
+          ..addCommand(TestCommand(out: out, err: err))
+          ..addCommand(InitCommand(out: out, err: err));
     try {
       // `check` is the default command: `dart run agent_lints --format json`.
       final effective =
