@@ -11,6 +11,7 @@ import '../config/config.dart';
 import '../engine/engine.dart';
 import '../report/violation.dart';
 import 'config_cache.dart';
+import 'plugin_messages.dart';
 
 /// The single analyzer rule that runs every rule from `agent_lints.yaml`.
 ///
@@ -125,18 +126,8 @@ class _UnitVisitor extends SimpleAstVisitor<void> {
       v.offset,
       v.length,
       diagnosticCode: rule.codeFor(v.ruleId, v.severity),
-      arguments: [v.shortMessage, _correction(v)],
+      arguments: [PluginMessages.problem(v), PluginMessages.correction(v)],
     );
-  }
-
-  static String _correction(Violation v) {
-    final parts = <String>[
-      if (v.useInstead != null) 'Use ${v.useInstead}.',
-      if (v.suggest != null && v.suggest!.isNotEmpty) 'Suggest: ${v.suggest}.',
-      if (v.docs != null) 'See ${v.docs}.',
-      'Explain: dart run agent_lints explain ${v.ruleId}',
-    ];
-    return parts.join(' ');
   }
 }
 
