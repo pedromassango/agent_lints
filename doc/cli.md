@@ -132,7 +132,7 @@ dart run agent_lints explain --kinds         # the rule language, generated from
 
 ```
 no_print  (error)  Use the app logger instead of print
-  kind        match
+  kind        call
   scope       lib/**  except lib/core/log.dart
   matches     call name=print package=dart:core
   message     `print` ships to release logs. Use {{use_instead}}.
@@ -143,8 +143,7 @@ no_print  (error)  Use the app logger instead of print
               good  void f() {}
 ```
 
-`matches` is the compiled matcher, which is also what `banned` and `naming`
-expand to.
+`matches` is the compiled matcher.
 
 ## `test`
 

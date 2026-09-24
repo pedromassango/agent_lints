@@ -29,18 +29,18 @@ no value for a particular hit renders as empty text.
 
 | Placeholder | Set by | Value |
 |---|---|---|
-| `{{name}}` | `new`, `call`, `ref`, `class`, `function`, `variable`, `file`, `import` | resolved qualified name (`EdgeInsets.all`, `State.setState`, `HomeScreen`); the URI for imports |
+| `{{name}}` | `use`, `new`, `call`, `ref`, `class`, `function`, `variable`, `file`, `import`, `deny_imports` | resolved qualified name (`EdgeInsets.all`, `State.setState`, `HomeScreen`); the URI for imports |
 | `{{short_name}}` | same | the last segment (`all`, `setState`) |
 | `{{package}}`, `{{library}}` | `new`, `call`, `ref`, `import` | defining package / library URI |
 | `{{type}}` | `new`, `call`, `ref`, `variable`, `literal` | static type |
 | `{{kind}}` | `class`, `function`, `variable`, `literal` | `class` / `mixin` / `method` / `constructor` / `top_level` / `int` ... |
 | `{{receiver}}` | `call` | source of the receiver expression |
-| `{{uri}}` | `import`, `imports` | the import URI as written |
-| `{{resolved_path}}` | `import`, `imports` | project path of the imported file, when inside the project |
-| `{{package_path}}` | `import`, `imports` | `package:app/...` form of that path |
-| `{{denied}}` | `imports` | the `deny` entry that matched |
+| `{{uri}}` | `import`, `deny_imports` | the import URI as written |
+| `{{resolved_path}}` | `import`, `deny_imports` | project path of the imported file, when inside the project |
+| `{{package_path}}` | `import`, `deny_imports` | `package:app/...` form of that path |
+| `{{denied}}` | `deny_imports` | the entry that matched |
 | `{{lines}}`, `{{code_lines}}` | `file` | line counts |
-| `{{ancestor}}` | `inside` | name (or source) of the ancestor that satisfied `inside` |
+| `{{ancestor}}` | `parent`, `inside` | name (or source) of the ancestor that matched |
 
 ## From arguments
 

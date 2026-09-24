@@ -56,7 +56,7 @@ Or write the file by hand:
 
 ```yaml
 # agent_lints.yaml
-version: 1
+version: 2
 include: [lib/**]
 fail_on: warning
 
@@ -64,7 +64,8 @@ rules:
   no_print:
     severity: error
     description: Use the project logger instead of print
-    match: { call: { name: print, package: dart:core } }
+    call: print
+    package: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."

@@ -19,21 +19,22 @@ Dart file ──► analyzer (resolved AST) ──► Engine: one visitor pass p
 
 `ConfigLoader` reads the YAML with `package:yaml`, keeping source spans so
 every error carries `file:line:col` and a dotted path. Errors are collected,
-not thrown at the first one. Rule kinds are data: `banned` and `naming` are
-expanded into a `match:` map; `imports` compiles to its own matcher. Message
-templates are validated against the placeholder catalogue at load time.
+not thrown at the first one. A rule is a flat map: the loader takes the rule
+fields and hands the rest to the matcher compiler. Message templates are
+validated against the placeholder catalogue at load time.
 
 ## Matchers
 
-`MatcherCompiler` turns a `match:` map into a tree of `Matcher` objects. Each
-node key has a factory (`new`, `call`, `ref`, `import`, `class`, `function`,
-`variable`, `literal`, `file`); context keys wrap the node matcher in a
-`ContextMatcher`; `any` / `all` / `not` are combinators. A matcher declares the
+`MatcherCompiler` turns a rule map into a tree of `Matcher` objects. Each
+node key has a `NodeSpec` (its attributes, what a bare value means, how to
+build it); sibling attributes are merged into the node's body; context keys
+wrap the node matcher in a `ContextMatcher`; `any` / `all` / `not` are
+combinators; `except` is `all` plus `not`. A matcher declares the
 `NodeKind`s it can succeed on and returns a `MatchResult` (node, captures,
 optional token to anchor the diagnostic) or null.
 
-Adding a node kind is one class with a `static const keys` list and one line
-in the compiler's factory map. The self-check config in the repo enforces the
+Adding a node kind is one matcher class with a `static const keys` list and
+one `NodeSpec` in the compiler. The self-check config in the repo enforces the
 `keys` constant so `explain --kinds` and the validator stay complete.
 
 ## Resolution helpers

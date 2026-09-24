@@ -38,11 +38,11 @@ When asked to add a project convention:
 1. `dart run agent_lints explain --kinds` prints the rule language (node
    kinds, argument constraints, context keys, placeholders), generated from
    the installed version.
-2. Add a rule to `agent_lints.yaml`. Prefer the most specific node kind:
-   `imports` for layering, `naming` for names, `banned` for "never use X",
-   `match` for anything with arguments or context. Always write `message`
-   with what to do instead, and `examples` with at least one `bad` and one
-   `good` snippet.
+2. Add a rule to `agent_lints.yaml`: one node key (`use` for "never use X",
+   `deny_imports` for layering, `class` / `function` / `file` with a `name`
+   pattern for naming, `new` / `call` when arguments or context matter) plus
+   `message` with what to do instead, and `examples` with at least one `bad`
+   and one `good` snippet.
 3. `dart run agent_lints validate` reports every YAML problem with position
    and hint. Fix them all.
 4. `dart run agent_lints test` proves the rule against its examples.
@@ -55,8 +55,9 @@ Template:
   <rule_id>:
     severity: warning
     description: <one line>
-    files: [lib/**]
-    match: { ... }
+    include: [lib/**]
+    use: <symbol>                 # or new / call / class / deny_imports / file ...
+    package: <package>
     use_instead: <what to write instead>
     message: "<what was found>. <why>. Use {{use_instead}}."
     examples:

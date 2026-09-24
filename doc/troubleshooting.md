@@ -70,7 +70,7 @@ package with `dart pub get --no-example`.
   `package:material_ui`. Use lists: `package: [flutter, material_ui]`.
 - Generated files (`*.g.dart`, `*.freezed.dart`, ...) are always excluded.
 - The file is outside `include` (default `lib/**`) or excluded by the rule's
-  `files` / `exclude`. `explain` prints the effective scope.
+  `include` / `exclude`. `explain` prints the effective scope.
 - The code does not resolve (missing `pub get`, broken import): unresolved
   calls match only by their written identifier and never by `package`.
 
@@ -95,3 +95,14 @@ The CLI creates an analysis context and resolves the project: a few seconds
 for a large Flutter app, then tens of milliseconds per file. `--changed` and
 `--files` restrict what is resolved. The IDE plugin reuses the server's
 resolution and adds only the matcher pass.
+
+## `unsupported version 1`
+
+agent_lints 0.2 replaced the nested `match:` form with flat rules: one node
+key per rule with its attributes, `args:` and context as sibling lines. Set
+`version: 2` and unwrap: `match: { new: { name: X, args: {...} } }` becomes
+`new: X` and `args: {...}`; `banned: X` becomes `use: X`;
+`imports: { deny: [...] }` becomes `deny_imports: [...]`;
+`naming: { target: class, pattern: P }` becomes `class: any` with
+`name: { not: P }`; `files:` becomes `include:`. See
+[rule language](rule-language.md).

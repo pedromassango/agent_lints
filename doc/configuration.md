@@ -11,7 +11,7 @@ current directory (or takes `--config <path>`); the IDE plugin finds the nearest
 one above each analyzed file.
 
 ```yaml
-version: 1
+version: 2
 include: [lib/**]
 exclude: [lib/generated/**]
 fail_on: warning
@@ -32,7 +32,7 @@ rules:
 
 | Key | Type | Default | Meaning |
 |---|---|---|---|
-| `version` | int | required | Schema version. Only `1`. |
+| `version` | int | required | Schema version. Only `2`. |
 | `include` | glob or list | `[lib/**]` | Files to check. `bin/**` and `test/**` are opt-in. |
 | `exclude` | glob or list | `[]` | Removed after `include`. The [always-excluded](#always-excluded) globs are added. |
 | `fail_on` | `error` \| `warning` \| `info` | `warning` | The CLI exits 1 when any violation has this severity or higher. Nothing else changes. `--fail-on none` disables it for one run. |
@@ -69,10 +69,8 @@ values:
 Used in a rule:
 
 ```yaml
-    match:
-      new:
-        name: EdgeInsets.all
-        args: { value: { literal: num, not_in: $spacing } }
+    new: EdgeInsets.all
+    args: { value: { literal: num, not_in: $spacing } }
     message: "{{value}} is off scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "EdgeInsets.all({{closest.name}})"
 ```
@@ -90,20 +88,19 @@ Used in a rule:
 ```yaml
 rules:
   rule_id:                       # ^[a-z][a-z0-9_]*$ ; this becomes the diagnostic code
-    # exactly ONE of the four kinds:
-    match: { ... }               # see rule-language.md
-    banned: ...                  # see sugar-kinds.md
-    imports: { ... }
-    naming: { ... }
+    use: print                   # exactly ONE node key (see rule-language.md)
+    package: dart:core           # the node's attributes, as sibling lines
+    args: { ... }                # argument constraints (new, call)
+    parent: { new: Column }      # context: parent | inside | not_inside | contains | not_contains | except
 
     severity: warning            # error | warning | info | off
     description: "one line"      # shown by explain and in SARIF
-    files: [lib/features/**]     # narrows include for this rule
+    include: [lib/features/**]   # narrows the top-level include for this rule
     exclude: [lib/legacy/**]     # per-rule exclusions
-    message: "..."               # required; {{placeholders}} allowed
+    message: "..."               # optional; {{placeholders}} allowed
     use_instead: "..."           # what to write instead; feeds {{use_instead}} and the IDE correction
     suggest: "..."               # a replacement snippet; placeholders allowed
-    docs: doc/ui.md#buttons     # path or URL; feeds {{docs}}
+    docs: docs/ui.md#buttons     # path or URL; feeds {{docs}}
     vars: { logger: AppLog }     # custom placeholders: {{vars.logger}}
     examples:                    # checked by `dart run agent_lints test`
       bad: ["..."]               # each must trigger this rule
@@ -113,9 +110,9 @@ rules:
 | Field | Notes |
 |---|---|
 | `severity` | `off` disables the rule entirely. Default `warning`. |
-| `files` / `exclude` | Globs relative to the project. `files` is intersected with the top-level `include`. |
-| `message` | Multi-line strings are fine; the IDE shows them on one line, the CLI keeps line breaks. Unknown placeholders are config errors. |
-| `examples` | Complete Dart snippets (with imports). They are written into a scratch folder inside the project so they resolve against its real dependencies. File scoping (`files`, `exclude`) is ignored for them. |
+| `include` / `exclude` | Globs relative to the project. `include` is intersected with the top-level `include`. |
+| `message` | Defaults to `` `{{found}}` is not allowed here. `` plus `Use {{use_instead}}.` when `use_instead` is set. Multi-line strings are fine; the IDE shows them on one line, the CLI keeps line breaks. Unknown placeholders are config errors. |
+| `examples` | Complete Dart snippets (with imports). They are written into a scratch folder inside the project so they resolve against its real dependencies. File scoping is ignored for them. |
 
 ## Rule ids
 
@@ -129,7 +126,7 @@ override a severity for the plugin. Keep them lowercase snake_case.
 **all** problems at once, each with `file:line:col`, the YAML path, and a hint:
 
 ```
-[config] agent_lints.yaml:14:7 rules.no_print.match.call.nmae: unknown key "nmae" (did you mean "name"?)
+[config] agent_lints.yaml:14:5 rules.no_print.packge: unknown key "packge" (did you mean "package"?)
 [config] agent_lints.yaml:16:14 rules.no_print.message: unknown placeholder {{fil}} (did you mean {{file}}?)
 ```
 
