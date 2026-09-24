@@ -15,11 +15,12 @@ writing a Dart AST visitor with `custom_lint` or the analyzer plugin API.
 With agent_lints a rule is a few lines of YAML in `agent_lints.yaml`:
 
 ```yaml
-version: 1
+version: 2
 rules:
   no_print:
     severity: error
-    match: { call: { name: print, package: dart:core } }
+    use: print
+    package: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
@@ -41,8 +42,7 @@ is handled like `package:flutter`.
 
 - [Getting started](getting-started.md): install, first rule, IDE setup, in five minutes.
 - [Configuration](configuration.md): every key of `agent_lints.yaml`.
-- [Rule language](rule-language.md): the `match:` reference, node kinds, arguments, context.
-- [Sugar kinds](sugar-kinds.md): `banned`, `imports`, `naming`.
+- [Rule language](rule-language.md): node keys, attributes, arguments, context, patterns.
 - [Placeholders](placeholders.md): everything a message can interpolate.
 - [CLI](cli.md): commands, flags, output formats, exit codes.
 - [IDE plugin](ide-plugin.md): `dart analyze` and editor integration.
