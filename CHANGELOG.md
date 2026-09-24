@@ -1,3 +1,7 @@
+## Unreleased
+
+- `values:` lists can be read from a Dart class: `{ from: lib/theme/spacing.dart, class: AppSpacing }` (#4).
+
 ## 0.1.2
 
 - README: context around the example.

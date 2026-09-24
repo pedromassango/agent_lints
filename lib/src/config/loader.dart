@@ -11,6 +11,7 @@ import '../match/matchers/new_matcher.dart';
 import '../match/matchers/ref_matcher.dart';
 import '../match/patterns.dart';
 import '../report/message_template.dart';
+import 'class_values.dart';
 import 'config.dart';
 import 'errors.dart';
 import 'values.dart';
@@ -97,7 +98,7 @@ class ConfigLoader {
         root.enumValue('fail_on', Severity.byName) ?? Severity.warning;
     final requireReason = root.boolean('require_ignore_reason') ?? false;
     final docs = root.string('docs');
-    final values = _values(root);
+    final values = _values(root, rootPath);
 
     final rules = <CompiledRule>[];
     final rulesReader = root.child('rules', required: true);
@@ -135,14 +136,37 @@ class ConfigLoader {
     );
   }
 
-  Map<String, ValueList> _values(YamlReader root) {
+  Map<String, ValueList> _values(YamlReader root, String rootPath) {
     final out = <String, ValueList>{};
     final vr = root.child('values');
     if (vr == null) return out;
     for (final name in vr.keys) {
       final node = vr.map.nodes[name];
+      if (node is YamlMap) {
+        final fr = YamlReader(node, vr.childPath(name), vr.errors);
+        fr.rejectUnknownKeys(['from', 'class']);
+        final from = fr.string('from', required: true);
+        if (from == null) continue;
+        final result = readClassValues(
+          rootPath: rootPath,
+          from: from,
+          className: fr.string('class'),
+        );
+        if (result.error != null) {
+          fr.error(result.error!, key: 'from');
+          continue;
+        }
+        if (result.warning != null) {
+          fr.errors.warn(result.warning!, span: node.span, path: fr.path);
+        }
+        out[name] = ValueList(name, result.entries);
+        continue;
+      }
       if (node is! YamlList) {
-        vr.error('expected a list of values', key: name);
+        vr.error(
+          'expected a list of values or { from: <file>, class: <Name> }',
+          key: name,
+        );
         continue;
       }
       final entries = <ValueEntry>[];

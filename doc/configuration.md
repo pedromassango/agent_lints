@@ -85,6 +85,24 @@ Used in a rule:
   `{{closest.value}}` the nearest one.
 - `{{values.spacing}}` renders any list anywhere.
 
+### Values from a Dart class
+
+Instead of copying the numbers into YAML, point at the class that defines
+them:
+
+```yaml
+values:
+  spacing: { from: lib/theme/spacing.dart, class: AppSpacing }
+  breakpoints: { from: lib/theme/layout.dart }        # top-level consts
+```
+
+Every `static const` (or `static final`) field of the class whose initializer
+is a number or string literal becomes an entry named `AppSpacing.sm`, so
+`{{closest.name}}` yields a name you can paste. Without `class:` the file's
+top-level `const` variables are read. Computed initializers such as
+`4 * 2` are skipped. A missing file or class is a config error; a class with
+no usable fields is a warning.
+
 ## Rule body
 
 ```yaml
