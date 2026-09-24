@@ -11,7 +11,7 @@ values:
   spacing: [4, { value: 8, name: AppSpacing.sm }]
 rules:
   r:
-    new: EdgeInsets.all
+    constructor: EdgeInsets.all
     args: { value: { literal: num, not_in: \$spacing } }
     message: "{{value}} off scale. Allowed: {{allowed}}."
 ''',

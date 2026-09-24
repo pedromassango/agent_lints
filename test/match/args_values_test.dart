@@ -13,7 +13,7 @@ values:
     - { value: 16, name: AppSpacing.md }
 rules:
   spacing_on_scale:
-    new: [EdgeInsets.all, EdgeInsets.symmetric, SizedBox]
+    constructor: [EdgeInsets.all, EdgeInsets.symmetric, SizedBox]
     args: { "*": { literal: num, not_in: \$spacing } }
     message: "{{value}} to {{name}}({{arg}}) off scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
@@ -49,7 +49,7 @@ final e = SizedBox(width: dyn());
         final v = await lint(
           rule(
             'r',
-            '    new: SizedBox\n    args: { height: { not_in: [4, 8] } }\n    message: "{{value}}"\n',
+            '    constructor: SizedBox\n    args: { height: { not_in: [4, 8] } }\n    message: "{{value}}"\n',
           ),
           {'lib/a.dart': code},
         );
@@ -60,7 +60,7 @@ final e = SizedBox(width: dyn());
     test('value, min, max, literal kinds and list shorthand', () async {
       final v = await lint(
         rule('r', '''
-    new: EdgeInsets.symmetric
+    constructor: EdgeInsets.symmetric
     args: { horizontal: 16, vertical: { min: 10, max: 14, literal: int } }
     message: ok
 '''),
@@ -70,7 +70,7 @@ final e = SizedBox(width: dyn());
       final list = await lint(
         rule(
           'r',
-          '    new: EdgeInsets.symmetric\n    args: { horizontal: [8, 16] }\n    message: ok\n',
+          '    constructor: EdgeInsets.symmetric\n    args: { horizontal: [8, 16] }\n    message: ok\n',
         ),
         {'lib/a.dart': code},
       );
@@ -81,7 +81,7 @@ final e = SizedBox(width: dyn());
       final byName = await lint(
         rule(
           'r',
-          '    new: Text\n    args: { data: { source: "/^\'x/" } }\n    message: "{{args.data}}"\n',
+          '    constructor: Text\n    args: { data: { source: "/^\'x/" } }\n    message: "{{args.data}}"\n',
         ),
         {
           'lib/a.dart':
@@ -92,7 +92,7 @@ final e = SizedBox(width: dyn());
       final byIndex = await lint(
         rule(
           'r',
-          '    new: Text\n    args: { 0: { literal: string } }\n    message: "{{args.0}}"\n',
+          '    constructor: Text\n    args: { 0: { literal: string } }\n    message: "{{args.0}}"\n',
         ),
         {
           'lib/a.dart':

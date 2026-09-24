@@ -18,7 +18,7 @@ class TypePattern {
     if (node == null) return null;
     if (node is YamlMap) {
       final r = YamlReader(node, reader.childPath(key), reader.errors);
-      r.rejectUnknownKeys(['name', 'exact', 'package']);
+      r.rejectUnknownKeys(['name', 'exact', 'from', 'package']);
       final exactNode = node.nodes['exact'];
       final name = StringPattern.fromNode(
         node.nodes['name'] ?? exactNode,
@@ -31,7 +31,11 @@ class TypePattern {
       }
       return TypePattern(
         name: name,
-        package: StringPattern.fromNode(node.nodes['package'], r, 'package'),
+        package: StringPattern.fromNode(
+          node.nodes['from'] ?? node.nodes['package'],
+          r,
+          node.nodes['from'] != null ? 'from' : 'package',
+        ),
         exact: exactNode != null && node.nodes['name'] == null,
       );
     }
@@ -58,7 +62,8 @@ class TypePattern {
     final pkg = package;
     if (pkg == null) return true;
     final elementPackage = packageOfUri(element.library.uri.toString());
-    return elementPackage != null && pkg.matches(elementPackage);
+    return elementPackage != null &&
+        packageMatches(pkg.matches, elementPackage);
   }
 
   String describe() =>

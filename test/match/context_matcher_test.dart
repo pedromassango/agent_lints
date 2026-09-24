@@ -19,9 +19,9 @@ Widget f() => Scaffold(body: Text('y'));
       () async {
         final v = await lint(
           rule('listview_in_column', '''
-    new: ListView
+    constructor: ListView
     args: { shrinkWrap: absent }
-    parent: { new: Column }
+    parent: { constructor: Column }
     message: "line {{line}} in {{ancestor}}"
 '''),
           {'lib/a.dart': code},
@@ -34,7 +34,7 @@ Widget f() => Scaffold(body: Text('y'));
       final anywhere = await lint(
         rule(
           'r',
-          '    new: ListView\n    inside: { new: Column }\n    message: "{{line}}"\n',
+          '    constructor: ListView\n    inside: { constructor: Column }\n    message: "{{line}}"\n',
         ),
         {'lib/a.dart': code},
       );
@@ -42,7 +42,7 @@ Widget f() => Scaffold(body: Text('y'));
       final notInside = await lint(
         rule(
           'r',
-          '    new: ListView\n    not_inside: { new: Column }\n    message: "{{line}}"\n',
+          '    constructor: ListView\n    not_inside: { constructor: Column }\n    message: "{{line}}"\n',
         ),
         {'lib/a.dart': code},
       );
@@ -53,7 +53,7 @@ Widget f() => Scaffold(body: Text('y'));
       final v = await lint(
         rule(
           'r',
-          '    new: ListView\n    inside: { function: d }\n    message: "{{line}}"\n',
+          '    constructor: ListView\n    inside: { function: d }\n    message: "{{line}}"\n',
         ),
         {'lib/a.dart': code},
       );
@@ -63,8 +63,8 @@ Widget f() => Scaffold(body: Text('y'));
     test('not_contains and expr: not', () async {
       final v = await lint(
         rule('scaffold_body_safearea', '''
-    new: Scaffold
-    args: { body: { expr: { not: { new: SafeArea } } } }
+    constructor: Scaffold
+    args: { body: { expr: { not: { constructor: SafeArea } } } }
     message: "{{line}}"
 '''),
         {'lib/a.dart': code},
@@ -73,7 +73,7 @@ Widget f() => Scaffold(body: Text('y'));
       final contains = await lint(
         rule(
           'r',
-          '    new: Scaffold\n    not_contains: { new: SafeArea }\n    message: "{{line}}"\n',
+          '    constructor: Scaffold\n    not_contains: { constructor: SafeArea }\n    message: "{{line}}"\n',
         ),
         {'lib/a.dart': code},
       );

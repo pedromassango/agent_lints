@@ -54,7 +54,7 @@ rules:
 no_print  (error)  Use the logger
   kind        call
   scope       lib/features/**
-  matches     call name=print package=dart:core
+  matches     call name=print from=dart:core
   message     no print. Use {{use_instead}}.
   use_instead AppLog.d
   suggest     AppLog.d({{args.0}})
@@ -79,10 +79,12 @@ no_print  (error)  Use the logger
     test('--kinds prints the reference generated from the matchers', () async {
       final (code, out, _) = await run(['explain', '--kinds']);
       expect(code, 0);
-      expect(out, contains('new          constructor calls'));
+      expect(out, contains('constructor  constructor calls'));
       expect(
         out,
-        contains('name (bare value), package, library, const, type, args'),
+        contains(
+          'name (bare value), from, package, library, const, type, args',
+        ),
       );
       expect(
         out,
@@ -109,7 +111,7 @@ rules:
       bad: ["void f() { print(1); }"]
       good: ["void f() {}"]
   taps:
-    new: GestureDetector
+    constructor: GestureDetector
     args: { onTap: present }
     message: no taps
     examples:
@@ -166,7 +168,7 @@ rules:
       final yaml = File(
         p.join(dir.path, 'agent_lints.yaml'),
       ).readAsStringSync();
-      expect(yaml, contains('package: [flutter, material_ui]'));
+      expect(yaml, contains('from: flutter'));
       expect(yaml, contains('package:my_app/ui/ui.dart'));
       expect(configErrors(yaml), isEmpty);
       final (again, out2, _) = await run(['init', '--dir', dir.path]);

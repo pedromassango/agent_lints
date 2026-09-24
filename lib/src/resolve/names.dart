@@ -86,3 +86,21 @@ String? packagePathOf(String? relativePath, String? packageName) {
   if (!relativePath.startsWith('lib/')) return null;
   return 'package:$packageName/${relativePath.substring(4)}';
 }
+
+/// Packages that `from: flutter` stands for. `Color`, `Offset` and friends
+/// are defined in `dart:ui`; Material lives in `material_ui` on newer SDKs.
+const flutterFamily = {'flutter', 'material_ui', 'cupertino_ui', 'dart:ui'};
+
+/// Whether [pattern] accepts the package [pkg]. Understands the `project`
+/// alias (the analyzed package) and the `flutter` family.
+bool packageMatches(
+  bool Function(String) pattern,
+  String pkg, {
+  String? projectPackage,
+}) {
+  if (pattern(pkg)) return true;
+  if (projectPackage != null && pkg == projectPackage && pattern('project')) {
+    return true;
+  }
+  return flutterFamily.contains(pkg) && pattern('flutter');
+}

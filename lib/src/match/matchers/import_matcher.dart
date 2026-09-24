@@ -32,6 +32,7 @@ class ImportMatcher extends Matcher {
 
   static const keys = [
     'uri',
+    'from',
     'package',
     'relative',
     'prefix',
@@ -77,9 +78,11 @@ class ImportMatcher extends Matcher {
         packageOfUri(resolvedUri) ?? (isRelative ? ctx.packageName : null);
     if (package != null) {
       if (pkg == null) return null;
-      final isProject = ctx.packageName != null && pkg == ctx.packageName;
-      if (!(package!.matches(pkg) ||
-          (isProject && package!.matches('project')))) {
+      if (!packageMatches(
+        package!.matches,
+        pkg,
+        projectPackage: ctx.packageName,
+      )) {
         return null;
       }
     }

@@ -83,8 +83,10 @@ void main() {
     test('a rule needs exactly one node key', () {
       final errors = configErrors(rule('r', '    message: x\n'));
       expect(errors.single.message, contains('exactly one node key'));
-      expect(errors.single.hint, contains('node keys: use, new, call'));
-      final two = configErrors(rule('r', '    call: print\n    new: Text\n'));
+      expect(errors.single.hint, contains('node keys: use, constructor, call'));
+      final two = configErrors(
+        rule('r', '    call: print\n    constructor: Text\n'),
+      );
       expect(two.single.message, contains('only one node key'));
     });
 
@@ -92,12 +94,12 @@ void main() {
       final errors = configErrors(
         rule(
           'r',
-          '    new: { name: Text, package: flutter }\n    package: flutter\n',
+          '    constructor: { name: Text, package: flutter }\n    package: flutter\n',
         ),
       );
       expect(
         errors.single.message,
-        contains('given both inside "new" and next to it'),
+        contains('given both inside "constructor" and next to it'),
       );
     });
 
@@ -121,7 +123,7 @@ values:
   spacing: [4, 8]
 rules:
   r:
-    new: EdgeInsets.all
+    constructor: EdgeInsets.all
     args: { value: { not_in: \$radius } }
 ''');
       expect(errors.single.message, 'unknown values list "\$radius"');

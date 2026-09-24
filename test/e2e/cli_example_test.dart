@@ -72,7 +72,7 @@ void main() {
     expect(result.exitCode, 0);
     expect(
       result.stdout,
-      contains('matches     call name=print package=dart:core'),
+      contains('matches     call name=print from=dart:core'),
     );
   });
 

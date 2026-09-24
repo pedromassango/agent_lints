@@ -14,13 +14,20 @@ class ElementFilter {
   final StringPattern? package;
   final StringPattern? library;
 
-  static const keys = ['name', 'package', 'library'];
+  static const keys = ['name', 'from', 'package', 'library'];
 
   static ElementFilter fromReader(YamlReader r) {
     final map = r.map;
+    if (map.containsKey('from') && map.containsKey('package')) {
+      r.error(
+        '"from" and "package" mean the same thing; keep one',
+        key: 'package',
+      );
+    }
+    final pkgKey = map.containsKey('from') ? 'from' : 'package';
     return ElementFilter(
       name: StringPattern.fromNode(map.nodes['name'], r, 'name'),
-      package: StringPattern.fromNode(map.nodes['package'], r, 'package'),
+      package: StringPattern.fromNode(map.nodes[pkgKey], r, pkgKey),
       library: StringPattern.fromNode(map.nodes['library'], r, 'library'),
     );
   }
@@ -47,10 +54,13 @@ class ElementFilter {
     if (pkgPat != null) {
       final pkg = resolved.package;
       if (pkg == null) return false;
-      final isProject = ctx.packageName != null && pkg == ctx.packageName;
-      final ok =
-          pkgPat.matches(pkg) || (isProject && pkgPat.matches('project'));
-      if (!ok) return false;
+      if (!packageMatches(
+        pkgPat.matches,
+        pkg,
+        projectPackage: ctx.packageName,
+      )) {
+        return false;
+      }
     }
     final libPat = library;
     if (libPat != null) {
@@ -67,7 +77,7 @@ class ElementFilter {
   String describe() {
     final parts = <String>[];
     if (name != null) parts.add('name=${name!.describe()}');
-    if (package != null) parts.add('package=${package!.describe()}');
+    if (package != null) parts.add('from=${package!.describe()}');
     if (library != null) parts.add('library=${library!.describe()}');
     return parts.isEmpty ? 'any' : parts.join(' ');
   }

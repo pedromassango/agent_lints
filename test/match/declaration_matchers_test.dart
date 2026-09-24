@@ -84,7 +84,7 @@ void sync() {}
       final v = await lint(
         rule(
           'r',
-          '    variable: any\n    initializer: { new: Text }\n    message: "{{name}} = {{found}}"\n',
+          '    variable: any\n    initializer: { constructor: Text }\n    message: "{{name}} = {{found}}"\n',
         ),
         {
           'lib/a.dart':

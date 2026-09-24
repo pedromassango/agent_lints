@@ -229,7 +229,7 @@ class MatcherCompiler {
   Matcher? _sub(YamlNode node, String path, {bool allowNot = true}) {
     if (node is! YamlMap) {
       errors.add(
-        'expected a matcher map, e.g. { new: Column }',
+        'expected a matcher map, e.g. { constructor: Column }',
         span: node.span,
         path: path,
       );
@@ -312,7 +312,7 @@ class MatcherCompiler {
       },
     ),
     NodeSpec(
-      key: 'new',
+      key: 'constructor',
       description: 'constructor calls',
       bodyKeys: NewMatcher.keys.where((k) => k != 'args').toList(),
       acceptsArgs: true,
@@ -374,9 +374,15 @@ class MatcherCompiler {
             hint: 'allowed: import, export, any',
           );
         }
+        if (r.has('from') && r.has('package')) {
+          r.error(
+            '"from" and "package" mean the same thing; keep one',
+            key: 'package',
+          );
+        }
         return ImportMatcher(
           uri: _pat(r, 'uri'),
-          package: _pat(r, 'package'),
+          package: _pat(r, r.has('from') ? 'from' : 'package'),
           relative: r.boolean('relative'),
           prefix: _pat(r, 'prefix'),
           show: _pat(r, 'show'),
