@@ -20,7 +20,7 @@ rules:
   no_print:
     severity: error
     use: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."

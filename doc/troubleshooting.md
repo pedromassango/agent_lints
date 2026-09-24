@@ -100,8 +100,8 @@ resolution and adds only the matcher pass.
 
 agent_lints 0.2 replaced the nested `match:` form with flat rules: one node
 key per rule with its attributes, `args:` and context as sibling lines. Set
-`version: 2` and unwrap: `match: { new: { name: X, args: {...} } }` becomes
-`new: X` and `args: {...}`; `banned: X` becomes `use: X`;
+`version: 2` and unwrap: `match: { constructor: { name: X, args: {...} } }` becomes
+`constructor: X` and `args: {...}`; `banned: X` becomes `use: X`;
 `imports: { deny: [...] }` becomes `deny_imports: [...]`;
 `naming: { target: class, pattern: P }` becomes `class: any` with
 `name: { not: P }`; `files:` becomes `include:`. See

@@ -69,7 +69,7 @@ values:
 Used in a rule:
 
 ```yaml
-    new: EdgeInsets.all
+    constructor: EdgeInsets.all
     args: { value: { literal: num, not_in: $spacing } }
     message: "{{value}} is off scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "EdgeInsets.all({{closest.name}})"
@@ -89,9 +89,9 @@ Used in a rule:
 rules:
   rule_id:                       # ^[a-z][a-z0-9_]*$ ; this becomes the diagnostic code
     use: print                   # exactly ONE node key (see rule-language.md)
-    package: dart:core           # the node's attributes, as sibling lines
+    from: dart:core           # the node's attributes, as sibling lines
     args: { ... }                # argument constraints (new, call)
-    parent: { new: Column }      # context: parent | inside | not_inside | contains | not_contains | except
+    parent: { constructor: Column }      # context: parent | inside | not_inside | contains | not_contains | except
 
     severity: warning            # error | warning | info | off
     description: "one line"      # shown by explain and in SARIF

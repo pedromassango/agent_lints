@@ -15,14 +15,14 @@ after pasting.
   no_print:
     severity: error
     use: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
 
   no_future_delayed_in_prod:
-    new: Future.delayed
-    package: dart:async
+    constructor: Future.delayed
+    from: dart:async
     message: "Future.delayed in production code hides timing bugs. Inject a clock or use a stream."
 ```
 
@@ -36,14 +36,14 @@ after pasting.
     message: "setState inside build() causes rebuild loops. Move it to a handler or initState."
 
   listview_in_column:
-    new: ListView
+    constructor: ListView
     args: { shrinkWrap: absent }
-    parent: { new: Column }
+    parent: { constructor: Column }
     message: "ListView directly inside {{ancestor}} needs shrinkWrap: true or an Expanded wrapper."
 
   no_gesture_detector_for_taps:
-    new: GestureDetector
-    package: [flutter, material_ui]
+    constructor: GestureDetector
+    from: flutter
     args: { onTap: present, onPanUpdate: absent }
     use_instead: InkWell (ripple + semantics)
     suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
@@ -56,8 +56,8 @@ after pasting.
 
   scaffold_body_safearea:
     severity: info
-    new: Scaffold
-    args: { body: { expr: { not: { new: SafeArea } } } }
+    constructor: Scaffold
+    args: { body: { expr: { not: { constructor: SafeArea } } } }
     message: "Wrap the Scaffold body in SafeArea."
 ```
 
@@ -90,7 +90,7 @@ after pasting.
   providers_in_provider_files:
     variable: any
     scope: top_level
-    type: { name: ProviderBase, package: riverpod }
+    type: { name: ProviderBase, from: riverpod }
     exclude: ["lib/**/*_provider.dart"]
     message: "Provider {{name}} must be declared in a *_provider.dart file."
 ```
@@ -129,36 +129,36 @@ values:
 rules:
   no_raw_colors:
     severity: error
-    new: Color
-    package: [flutter, dart:ui]
+    constructor: Color
+    from: dart:ui
     exclude: [lib/core/theme/**]
     use_instead: AppColors.* (lib/core/theme/app_colors.dart) or Theme.of(context).colorScheme
     message: "Raw {{found}}. Colours live in app_colors.dart; add a named colour there if none fits."
 
   no_palette_colors:
     use: "Colors.*"
-    package: [flutter, material_ui]
+    from: flutter
     except: { use: Colors.transparent }
     use_instead: Theme.of(context).colorScheme
     message: "{{name}} is a raw palette colour. Use {{use_instead}}."
 
   spacing_on_scale:
-    new: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
-    package: [flutter, material_ui]
+    constructor: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+    from: flutter
     args: { "*": { literal: num, not_in: $spacing } }
     message: "{{value}} passed to {{name}}({{arg}}) is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
 
   no_raw_text_styles:
-    new: TextStyle
-    package: [flutter, dart:ui]
+    constructor: TextStyle
+    from: dart:ui
     include: [lib/features/**]
     use_instead: Theme.of(context).textTheme.* or AppTextStyles.*
     message: "Raw TextStyle in feature code. Use {{use_instead}}."
 
   no_adhoc_card:
-    new: Container
-    args: { decoration: { expr: { new: BoxDecoration, args: { color: present } } } }
+    constructor: Container
+    args: { decoration: { expr: { constructor: BoxDecoration, args: { color: present } } } }
     include: [lib/features/**]
     use_instead: AppCard
     message: "Ad-hoc surface: Container(decoration: BoxDecoration(color:)). Use {{use_instead}}; add a variant in lib/ui/card.dart if none fits."
@@ -180,8 +180,8 @@ rules:
 
   no_hardcoded_ui_strings:
     severity: error
-    new: Text
-    package: flutter
+    constructor: Text
+    from: flutter
     args: { data: { literal: string } }
     include: [lib/features/**]
     message: "User-facing string {{args.data}} must come from context.l10n.*"

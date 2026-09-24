@@ -65,7 +65,7 @@ rules:
     severity: error
     description: Use the project logger instead of print
     call: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."

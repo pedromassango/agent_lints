@@ -13,9 +13,9 @@ than three levels.
 ```yaml
 rules:
   listview_in_column:
-    new: ListView                      # node key: constructor calls named ListView
+    constructor: ListView                      # node key: constructor calls named ListView
     args: { shrinkWrap: absent }       # argument constraint
-    parent: { new: Column }            # context: direct child of a Column
+    parent: { constructor: Column }            # context: direct child of a Column
     message: "ListView directly inside {{ancestor}} needs shrinkWrap: true."
 ```
 
@@ -29,18 +29,18 @@ the URI for `import`); a map sets several; `any` means "no constraint on the
 name". Attributes can also be written as sibling lines, which keeps rules flat:
 
 ```yaml
-    new: { name: GestureDetector, package: flutter }   # same as:
-    new: GestureDetector
-    package: flutter
+    constructor: { name: GestureDetector, from: flutter }   # same as:
+    constructor: GestureDetector
+    from: flutter
 ```
 
 | Key | Matches | Attributes |
 |---|---|---|
-| `use` | any use of a symbol: constructor, call or reference | `name`, `package`, `library` |
-| `new` | constructor calls | `name`, `package`, `library`, `const`, `type`, `args` |
-| `call` | method and function calls | `name`, `package`, `library`, `on`, `returns`, `await`, `static`, `args` |
-| `ref` | references that are not calls (`Colors.red`, tear-offs) | `name`, `package`, `library`, `type` |
-| `import` | import / export directives | `uri`, `package`, `relative`, `prefix`, `show`, `kind: import\|export\|any`, `deferred` |
+| `use` | any use of a symbol: constructor, call or reference | `name`, `from`, `library` |
+| `constructor` | constructor calls | `name`, `from`, `library`, `const`, `type`, `args` |
+| `call` | method and function calls | `name`, `from`, `library`, `on`, `returns`, `await`, `static`, `args` |
+| `ref` | references that are not calls (`Colors.red`, tear-offs) | `name`, `from`, `library`, `type` |
+| `import` | import / export directives | `uri`, `from` (resolved package), `relative`, `prefix`, `show`, `kind: import\|export\|any`, `deferred` |
 | `deny_imports` | imports of the listed entries: `package:`/`dart:` URI globs, project path globs (`lib/data/**`, resolved through relative imports), or `relative` | `deny`, `replace_with` |
 | `class` | class / mixin / enum / extension declarations | `name`, `kind`, `extends`, `implements`, `mixes_in`, `abstract`, `annotation`, `has`, `lacks` |
 | `function` | function / method / constructor / getter / setter declarations | `name`, `kind`, `returns`, `async`, `static`, `const`, `override`, `annotation` |
@@ -48,12 +48,17 @@ name". Attributes can also be written as sibling lines, which keeps rules flat:
 | `literal` | int / double / string / bool / null / list / map literals | `kind`, `value`, `in`, `not_in`, `min`, `max`, `source`, `interpolated` |
 | `file` | the file itself, reported at line 1 | `name` (base name without `.dart`), `path`, `max_lines`, `min_lines`, `max_code_lines`, `min_code_lines` |
 
-Most rules want `use`. Reach for `new` / `call` / `ref` when you need `args`,
-`on`, `await` or `type`.
+Most rules want `use`. Reach for `constructor` / `call` / `ref` when you
+need `args`, `on`, `await` or `type`.
+
+Write the node on one line when it has one or two attributes
+(`constructor: { name: Color, from: dart:ui }`) and use sibling lines for
+`args:` and context. A readable order: `severity`, the node line, `args` and
+context, `include` / `exclude`, then `use_instead`, `message`, `examples`.
 
 ## Patterns
 
-Every name-like attribute (`name`, `uri`, `package`, `library`, `kind`,
+Every name-like attribute (`name`, `uri`, `from`, `library`, `kind`,
 `prefix`, `show`, `annotation`, ...) accepts:
 
 | Form | Matches |
@@ -82,20 +87,22 @@ offers several spellings and the pattern must match one:
 `NavigatorState.push`. An unresolved name (dynamic call, broken import) falls
 back to the identifier as written.
 
-### `package` and `library`
+### `from` and `library`
 
-`package` is the package that **defines** the element (`flutter`, `http`,
-`dart:core`, `dart:ui`; `project` for the analyzed package). Lists are common:
-`package: [flutter, material_ui]`. `Color` and `Offset` live in `dart:ui`.
-`library` is a glob over the defining library URI
-(`package:flutter/src/widgets/**`) for when a `src/` file matters.
+`from` is the package that **defines** the element: `http`, `dart:core`,
+`dart:async`, `project` (the analyzed package). `from: flutter` also covers
+`material_ui`, `cupertino_ui` and `dart:ui`, so `Color` (defined in
+`dart:ui`) and `Scaffold` (from `material_ui` on newer SDKs) both match it.
+`package` is accepted as a synonym. `library` is a glob over the defining
+library URI (`package:flutter/src/widgets/**`) for when a `src/` file
+matters.
 
 ### Types
 
 `type`, `returns`, `extends`, `implements`, `mixes_in`, `on.type` and
 `args.<x>.type` take a type pattern. A bare string checks the static type
 **and its supertypes** (`type: Widget` accepts a `Text`). `{ exact: Color }`
-disables the subtype walk; `{ name: Color, package: dart:ui }` adds the
+disables the subtype walk; `{ name: Color, from: dart:ui }` adds the
 package.
 
 ## Arguments: `args:`
@@ -113,7 +120,7 @@ index, `"*"` (some argument) or `"**"` (every argument).
       padding: { literal: num, not_in: $spacing }
       data: { source: "/^'http/" }
       color: { ref: { name: "Colors.*" } }
-      decoration: { expr: { new: BoxDecoration, args: { color: present } } }
+      decoration: { expr: { constructor: BoxDecoration, args: { color: present } } }
 ```
 
 Map form constraints, all ANDed:
@@ -154,8 +161,8 @@ helper method is not an ancestor of what that method builds.
 
 ```yaml
     any: [ { use: print }, { use: debugPrint } ]     # first branch that matches
-    all: [ { new: any, type: Widget }, { new: any, const: false } ]
-    args: { body: { expr: { not: { new: SafeArea } } } }   # not: nested only
+    all: [ { constructor: any, type: Widget }, { constructor: any, const: false } ]
+    args: { body: { expr: { not: { constructor: SafeArea } } } }   # not: nested only
 ```
 
 `not` cannot be the root of a rule: a lint fires on a node, so anchor on the
@@ -178,7 +185,7 @@ node and negate a property (`name: { not: "*Screen" }`, `absent`, `not_in`,
 rules:
   no_print:
     use: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
 
   no_setstate_in_build:
@@ -188,7 +195,7 @@ rules:
 
   no_palette_colors:
     use: "Colors.*"
-    package: [flutter, material_ui]
+    from: flutter
     except: { use: Colors.transparent }
     use_instead: Theme.of(context).colorScheme
 

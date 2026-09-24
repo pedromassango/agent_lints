@@ -57,7 +57,7 @@ Template:
     description: <one line>
     include: [lib/**]
     use: <symbol>                 # or new / call / class / deny_imports / file ...
-    package: <package>
+    from: <package>
     use_instead: <what to write instead>
     message: "<what was found>. <why>. Use {{use_instead}}."
     examples:

@@ -27,9 +27,8 @@ After making changes, run `dart run agent_lints` and fix all errors.
 
 ## Example
 
-A rule that bans `print` in favour of the project's logger. `use` and
-`package` say what to look for; the other fields are what a violator gets
-told.
+A rule that bans `print` in favour of the project's logger. `use` and `from`
+say what to look for; the other fields are what a violator gets told.
 
 ```yaml
 # agent_lints.yaml
@@ -38,7 +37,7 @@ rules:
   no_print:
     severity: error
     use: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
