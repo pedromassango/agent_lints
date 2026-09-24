@@ -16,7 +16,7 @@ rules:
     constructor: [EdgeInsets.all, EdgeInsets.symmetric, SizedBox]
     args: { "*": { literal: num, not_in: \$spacing } }
     message: "{{value}} to {{name}}({{arg}}) off scale. Allowed: {{allowed}}. Closest: {{closest}}."
-    suggest: "{{name}}({{arg}}: {{closest.name}})"
+    hint: "{{name}}({{arg}}: {{closest.name}})"
 ''';
     const code = '''
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ final e = SizedBox(width: dyn());
         'Allowed: 4, 8 (AppSpacing.sm), 16 (AppSpacing.md). '
         'Closest: 8 (AppSpacing.sm), 4.',
       );
-      expect(v.first.suggest, 'EdgeInsets.all(value: AppSpacing.sm)');
+      expect(v.first.hint, 'EdgeInsets.all(value: AppSpacing.sm)');
       expect(v[1].message, startsWith('12 to EdgeInsets.symmetric(vertical)'));
     });
 

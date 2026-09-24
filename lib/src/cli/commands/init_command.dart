@@ -142,7 +142,7 @@ rules:
     call: print
     from: dart:core
     use_instead: AppLog.d(...)
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
     examples:
       bad: ["void f() { print('x'); }"]
@@ -304,11 +304,11 @@ Each block is one violation:
 [error] no_print  lib/features/home/home_screen.dart:19:5
   found    print('home loaded')
   why      `print` ships to release logs. Use AppLog.d(...).
-  suggest  AppLog.d('home loaded')
+  hint  AppLog.d('home loaded')
   ignore   // ignore: agent_lints/no_print -- <reason>
 ```
 
-Fix the code as `why` / `suggest` say, then re-run until exit code 0. Only
+Fix the code as `why` / `hint` say, then re-run until exit code 0. Only
 suppress with the printed `ignore` comment and a real reason.
 
 Useful flags: `--changed` (files touched since the last commit),
@@ -321,7 +321,7 @@ Useful flags: `--changed` (files touched since the last commit),
    `class`, `deny_imports`, `file`, ...) with its attributes, `args:` and
    context (`parent`, `inside`, `contains`, `except`) as sibling lines, plus
    `message:` (with `{{placeholders}}`), `severity`, `include`, `exclude`,
-   `use_instead`, `suggest`, `docs` and `examples: { bad: [..], good: [..] }`.
+   `use_instead`, `hint`, `docs` and `examples: { bad: [..], good: [..] }`.
 3. `dart run agent_lints validate` reports every YAML problem with a hint.
 4. `dart run agent_lints test` runs the rule's examples: bad snippets must
    trigger it, good ones must not.

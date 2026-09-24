@@ -55,8 +55,8 @@ class AgentFormatter extends Formatter {
     );
     _line(b, 'found', v.found);
     _multi(b, 'why', v.message);
-    if (v.suggest != null && v.suggest!.isNotEmpty) {
-      _line(b, 'suggest', v.suggest!);
+    if (v.hint != null && v.hint!.isNotEmpty) {
+      _line(b, 'hint', v.hint!);
     }
     if (v.docs != null) _line(b, 'docs', v.docs!);
     _line(b, 'ignore', v.ignoreComment);

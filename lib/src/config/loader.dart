@@ -35,7 +35,7 @@ class ConfigLoader {
     'exclude',
     'message',
     'use_instead',
-    'suggest',
+    'hint',
     'docs',
     'vars',
     'examples',
@@ -207,7 +207,7 @@ class ConfigLoader {
             ? '`{{found}}` is not allowed here.'
             : '`{{found}}` is not allowed here. Use {{use_instead}}.');
     final message = template('message', messageText);
-    final suggest = template('suggest', r.string('suggest'));
+    final hint = template('hint', r.string('hint'));
     final include = (r.stringList('include') ?? const [])
         .map(compileGlob)
         .toList();
@@ -243,7 +243,7 @@ class ConfigLoader {
       matcher: matcher,
       message: message,
       description: r.string('description'),
-      suggest: suggest,
+      hint: hint,
       useInstead: useInstead,
       docs: r.string('docs'),
       vars: vars,

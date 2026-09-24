@@ -212,7 +212,7 @@ class Engine {
       message: message,
       shortMessage: rule.message.renderShort(data),
       description: rule.description,
-      suggest: rule.suggest?.render(data),
+      hint: rule.hint?.render(data),
       useInstead: rule.useInstead,
       docs: rule.docs,
       captures: r.captures,

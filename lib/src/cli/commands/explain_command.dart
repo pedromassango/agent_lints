@@ -112,7 +112,7 @@ class ExplainCommand extends Command<int> {
     _line(b, 'matches', rule.matcher.describe());
     _line(b, 'message', rule.message.source.trim());
     if (rule.useInstead != null) _line(b, 'use_instead', rule.useInstead!);
-    if (rule.suggest != null) _line(b, 'suggest', rule.suggest!.source);
+    if (rule.hint != null) _line(b, 'hint', rule.hint!.source);
     if (rule.docs != null) _line(b, 'docs', rule.docs!);
     if (rule.vars.isNotEmpty) {
       _line(

@@ -17,7 +17,7 @@ class Violation {
     required this.message,
     required this.shortMessage,
     this.description,
-    this.suggest,
+    this.hint,
     this.useInstead,
     this.docs,
     this.captures = const {},
@@ -37,7 +37,7 @@ class Violation {
   final String message;
   final String shortMessage;
   final String? description;
-  final String? suggest;
+  final String? hint;
   final String? useInstead;
   final String? docs;
   final Map<String, String> captures;
@@ -57,7 +57,7 @@ class Violation {
     'message': message,
     'short': shortMessage,
     if (useInstead != null) 'use_instead': useInstead,
-    if (suggest != null) 'suggest': suggest,
+    if (hint != null) 'hint': hint,
     if (docs != null) 'docs': docs,
     'ignore': ignoreComment,
     'context': {

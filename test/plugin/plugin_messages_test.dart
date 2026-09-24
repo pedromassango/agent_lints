@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 Violation _v({
   String message = 'a. b.',
   String? useInstead,
-  String? suggest,
+  String? hint,
   String? docs,
 }) => Violation(
   ruleId: 'r',
@@ -22,7 +22,7 @@ Violation _v({
   message: message,
   shortMessage: 'a.',
   useInstead: useInstead,
-  suggest: suggest,
+  hint: hint,
   docs: docs,
 );
 
@@ -41,12 +41,12 @@ void main() {
     expect(out, endsWith('word…'));
   });
 
-  test('correction lists use_instead, suggest, docs and explain', () {
+  test('correction lists use_instead, hint, docs and explain', () {
     expect(
       PluginMessages.correction(
-        _v(useInstead: 'AppLog', suggest: 'AppLog.d(x)', docs: 'docs/log.md'),
+        _v(useInstead: 'AppLog', hint: 'AppLog.d(x)', docs: 'docs/log.md'),
       ),
-      'Use AppLog.  Suggest: `AppLog.d(x)`  See docs/log.md.  Run explain to learn more: `dart run agent_lints explain r`',
+      'Use AppLog.  Hint: `AppLog.d(x)`  See docs/log.md.  Run explain to learn more: `dart run agent_lints explain r`',
     );
     expect(
       PluginMessages.correction(_v()),

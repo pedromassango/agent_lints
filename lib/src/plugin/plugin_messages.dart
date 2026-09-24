@@ -18,7 +18,7 @@ abstract final class PluginMessages {
   static String correction(Violation v) {
     final parts = <String>[
       if (v.useInstead != null) 'Use ${v.useInstead}.',
-      if (v.suggest != null && v.suggest!.isNotEmpty) 'Suggest: `${v.suggest}`',
+      if (v.hint != null && v.hint!.isNotEmpty) 'Hint: `${v.hint}`',
       if (v.docs != null) 'See ${v.docs}.',
       'Run explain to learn more: `dart run agent_lints explain ${v.ruleId}`',
     ];

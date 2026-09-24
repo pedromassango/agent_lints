@@ -13,7 +13,7 @@ class CompiledRule {
     required this.matcher,
     required this.message,
     this.description,
-    this.suggest,
+    this.hint,
     this.useInstead,
     this.docs,
     this.vars = const {},
@@ -31,7 +31,7 @@ class CompiledRule {
   final Matcher matcher;
   final MessageTemplate message;
   final String? description;
-  final MessageTemplate? suggest;
+  final MessageTemplate? hint;
   final String? useInstead;
   final String? docs;
   final Map<String, String> vars;
@@ -50,7 +50,7 @@ class CompiledRule {
         matcher: matcher,
         message: message,
         description: description,
-        suggest: suggest,
+        hint: hint,
         useInstead: useInstead,
         docs: docs,
         vars: vars,

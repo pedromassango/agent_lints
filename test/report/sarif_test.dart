@@ -33,7 +33,7 @@ rules:
       found: 'print',
       message: 'no print',
       shortMessage: 'no print',
-      suggest: 'log()',
+      hint: 'log()',
     );
     final out = SarifFormatter(rules: config.rules).format(
       RunResult(
@@ -55,7 +55,7 @@ rules:
     final result = (run['results'] as List).single as Map;
     expect(result['ruleId'], 'no_print');
     expect(result['level'], 'error');
-    expect((result['message'] as Map)['text'], 'no print\nSuggest: log()');
+    expect((result['message'] as Map)['text'], 'no print\nHint: log()');
     final loc =
         ((result['locations'] as List).single as Map)['physicalLocation']
             as Map;

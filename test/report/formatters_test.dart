@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 Violation _violation({
   String rule = 'no_print',
   Severity severity = Severity.error,
-  String? suggest = "AppLog.d('x')",
+  String? hint = "AppLog.d('x')",
   String? docs,
 }) => Violation(
   ruleId: rule,
@@ -22,7 +22,7 @@ Violation _violation({
   found: "print('x')",
   message: '`print` ships to release logs.\nUse AppLog.d instead.',
   shortMessage: '`print` ships to release logs.',
-  suggest: suggest,
+  hint: hint,
   docs: docs,
   captures: const {'name': 'print', 'args.0': "'x'"},
 );
@@ -45,7 +45,7 @@ void main() {
       final out = AgentFormatter().format(
         _result([
           _violation(docs: 'docs/logging.md'),
-          _violation(rule: 'other', severity: Severity.warning, suggest: null),
+          _violation(rule: 'other', severity: Severity.warning, hint: null),
         ]),
       );
       expect(out, '''
@@ -53,7 +53,7 @@ void main() {
   found    print('x')
   why      `print` ships to release logs.
            Use AppLog.d instead.
-  suggest  AppLog.d('x')
+  hint     AppLog.d('x')
   docs     docs/logging.md
   ignore   // ignore: agent_lints/no_print -- <reason>
 
@@ -126,7 +126,7 @@ lib/a.dart:2:3 • error • `print` ships to release logs. • no_print
       'start': {'line': 2, 'column': 3, 'offset': 10},
       'end': {'line': 2, 'column': 11, 'offset': 18},
     });
-    expect(v['suggest'], "AppLog.d('x')");
+    expect(v['hint'], "AppLog.d('x')");
     expect((v['context'] as Map).containsKey('args.0'), isFalse);
   });
 

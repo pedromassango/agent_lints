@@ -55,7 +55,7 @@ class SarifFormatter extends Formatter {
                 'message': {
                   'text': [
                     v.message,
-                    if (v.suggest != null) 'Suggest: ${v.suggest}',
+                    if (v.hint != null) 'Hint: ${v.hint}',
                   ].join('\n'),
                 },
                 'locations': [
@@ -78,11 +78,8 @@ class SarifFormatter extends Formatter {
                   'primaryLocationLineHash':
                       '${v.ruleId}:${v.relativePath}:${v.found.hashCode}',
                 },
-                if (v.suggest != null)
-                  'properties': {
-                    'suggest': v.suggest,
-                    'ignore': v.ignoreComment,
-                  },
+                if (v.hint != null)
+                  'properties': {'hint': v.hint, 'ignore': v.ignoreComment},
               },
           ],
         },

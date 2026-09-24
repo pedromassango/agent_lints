@@ -30,7 +30,7 @@ rules:
     call: print
     package: dart:core
     use_instead: AppLog.d
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     docs: docs/logging.md
     message: "no print. Use {{use_instead}}."
     examples:
@@ -57,7 +57,7 @@ no_print  (error)  Use the logger
   matches     call name=print from=dart:core
   message     no print. Use {{use_instead}}.
   use_instead AppLog.d
-  suggest     AppLog.d({{args.0}})
+  hint        AppLog.d({{args.0}})
   docs        docs/logging.md
   ignore      // ignore: agent_lints/no_print -- <reason>
   examples    bad   void f() { print(1); }

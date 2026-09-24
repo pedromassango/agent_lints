@@ -48,7 +48,7 @@ void main() {
       out,
       contains('[error] no_print  lib/features/home/home_screen.dart:20:5'),
     );
-    expect(out, contains("suggest  AppLog.d('home loaded')"));
+    expect(out, contains("hint     AppLog.d('home loaded')"));
     expect(out, contains('Closest: 8 (AppSpacing.sm)'));
     expect(
       out,
