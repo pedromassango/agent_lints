@@ -39,14 +39,14 @@ omitted, no colour. Multi-line messages keep their line breaks under `why`.
 [error] no_print  lib/features/home/home_screen.dart:19:5
   found    print('home loaded')
   why      `print` ships to release logs. Use AppLog.d(...).
-  suggest  AppLog.d('home loaded')
+  hint  AppLog.d('home loaded')
   docs     doc/logging.md
   ignore   // ignore: agent_lints/no_print -- <reason>
 
 [warning] spacing_on_scale  lib/features/cart/cart_tile.dart:12:18
   found    const EdgeInsets.symmetric(horizontal: 10)
   why      10 passed to EdgeInsets.symmetric(horizontal) is off the spacing scale. Allowed: 4, 8 (AppSpacing.sm), 16 (AppSpacing.md). Closest: 8 (AppSpacing.sm), 4.
-  suggest  EdgeInsets.symmetric(horizontal: AppSpacing.sm)
+  hint  EdgeInsets.symmetric(horizontal: AppSpacing.sm)
   ignore   // ignore: agent_lints/spacing_on_scale -- <reason>
 
 agent_lints: 1 error, 1 warning, 0 info in 2 files  (148 files checked, 1.9s, 2 suppressed)
@@ -81,7 +81,7 @@ lib/features/home/home_screen.dart:19:5 • error • `print` ships to release l
                  "end":   { "line": 19, "column": 25, "offset": 432 } },
       "found": "print('home loaded')",
       "message": "...", "short": "...",
-      "use_instead": "AppLog.d(...)", "suggest": "AppLog.d('home loaded')",
+      "use_instead": "AppLog.d(...)", "hint": "AppLog.d('home loaded')",
       "docs": "doc/logging.md",
       "ignore": "// ignore: agent_lints/no_print -- <reason>",
       "context": { "name": "print", "package": "dart:core",
@@ -100,7 +100,7 @@ SARIF 2.1.0 for GitHub code scanning and other importers. Rules from the config
 become `tool.driver.rules` (with `description`, `docs` as `helpUri`, default
 level); each violation becomes a result with `ruleId`, `level`, a physical
 location relative to the project (`uriBaseId: %SRCROOT%`), the rendered
-message plus `Suggest: ...`, and `properties.suggest` / `properties.ignore`.
+message plus `Hint: ...`, and `properties.hint` / `properties.ignore`.
 
 ### Exit codes
 
@@ -137,7 +137,7 @@ no_print  (error)  Use the app logger instead of print
   matches     call name=print package=dart:core
   message     `print` ships to release logs. Use {{use_instead}}.
   use_instead AppLog.d(...) from package:app/core/log.dart
-  suggest     AppLog.d({{args.0}})
+  hint     AppLog.d({{args.0}})
   ignore      // ignore: agent_lints/no_print -- <reason>
   examples    bad   void f() { print('x'); }
               good  void f() {}

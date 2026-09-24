@@ -22,7 +22,7 @@ rules:
     use: print
     from: dart:core
     use_instead: AppLog.d(...)
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
 ```
 

@@ -67,7 +67,7 @@ rules:
     call: print
     from: dart:core
     use_instead: AppLog.d(...)
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
     examples:
       bad: ["void f() { print('x'); }"]
@@ -88,7 +88,7 @@ Output when piped (what an agent sees):
 [error] no_print  lib/features/home/home_screen.dart:19:5
   found    print('home loaded')
   why      `print` ships to release logs. Use AppLog.d(...).
-  suggest  AppLog.d('home loaded')
+  hint  AppLog.d('home loaded')
   ignore   // ignore: agent_lints/no_print -- <reason>
 
 agent_lints: 1 error, 0 warnings, 0 info in 1 file  (14 files checked, 2.1s)
@@ -131,5 +131,5 @@ dart run agent_lints init --agents-md --claude-skill
 ```
 
 adds the [agent workflow](agent-workflow.md) to your agent instructions:
-run the linter after editing, fix from the `why` / `suggest` lines, add rules
+run the linter after editing, fix from the `why` / `hint` lines, add rules
 in YAML, prove them with `test`.

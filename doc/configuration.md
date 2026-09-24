@@ -72,7 +72,7 @@ Used in a rule:
     constructor: EdgeInsets.all
     args: { value: { literal: num, not_in: $spacing } }
     message: "{{value}} is off scale. Allowed: {{allowed}}. Closest: {{closest}}."
-    suggest: "EdgeInsets.all({{closest.name}})"
+    hint: "EdgeInsets.all({{closest.name}})"
 ```
 
 - `$spacing` in `in:` / `not_in:` compares the argument's **constant value**, so
@@ -99,7 +99,7 @@ rules:
     exclude: [lib/legacy/**]     # per-rule exclusions
     message: "..."               # optional; {{placeholders}} allowed
     use_instead: "..."           # what to write instead; feeds {{use_instead}} and the IDE correction
-    suggest: "..."               # a replacement snippet; placeholders allowed
+    hint: "..."               # a replacement snippet; placeholders allowed
     docs: docs/ui.md#buttons     # path or URL; feeds {{docs}}
     vars: { logger: AppLog }     # custom placeholders: {{vars.logger}}
     examples:                    # checked by `dart run agent_lints test`

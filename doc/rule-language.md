@@ -175,7 +175,7 @@ node and negate a property (`name: { not: "*Screen" }`, `absent`, `not_in`,
 |---|---|
 | `severity` | `error` \| `warning` \| `info` \| `off` (default `warning`) |
 | `message` | optional; defaults to `` `{{found}}` is not allowed here. Use {{use_instead}}. `` |
-| `use_instead`, `suggest`, `docs`, `description`, `vars` | see [placeholders](placeholders.md) |
+| `use_instead`, `hint`, `docs`, `description`, `vars` | see [placeholders](placeholders.md) |
 | `include`, `exclude` | file globs for this rule |
 | `examples` | `bad:` and `good:` snippets for `dart run agent_lints test` |
 

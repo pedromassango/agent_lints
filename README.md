@@ -39,7 +39,7 @@ rules:
     use: print
     from: dart:core
     use_instead: AppLog.d(...)
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
 ```
 
@@ -52,7 +52,7 @@ $ dart run agent_lints
 [error] no_print  lib/features/home/home_screen.dart:19:5
   found    print('home loaded')
   why      `print` ships to release logs. Use AppLog.d(...).
-  suggest  AppLog.d('home loaded')
+  hint  AppLog.d('home loaded')
   ignore   // ignore: agent_lints/no_print -- <reason>
 ```
 
@@ -63,7 +63,7 @@ what your project wanted instead:
 
 - **found**: the exact code that broke the rule.
 - **why**: the rule in your words, with the replacement spelled out.
-- **suggest**: a snippet it can paste.
+- **hint**: a snippet it can paste.
 - **ignore**: the one comment that silences it, so it does not invent another.
 
 Errors in the YAML get the same treatment: every problem at once, with the

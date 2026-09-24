@@ -17,7 +17,7 @@ after pasting.
     use: print
     from: dart:core
     use_instead: AppLog.d(...)
-    suggest: "AppLog.d({{args.0}})"
+    hint: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
 
   no_future_delayed_in_prod:
@@ -46,7 +46,7 @@ after pasting.
     from: flutter
     args: { onTap: present, onPanUpdate: absent }
     use_instead: InkWell (ripple + semantics)
-    suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
+    hint: "InkWell(onTap: {{args.onTap}}, child: ...)"
     message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
 
   const_widget_constructors:
@@ -147,7 +147,7 @@ rules:
     from: flutter
     args: { "*": { literal: num, not_in: $spacing } }
     message: "{{value}} passed to {{name}}({{arg}}) is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
-    suggest: "{{name}}({{arg}}: {{closest.name}})"
+    hint: "{{name}}({{arg}}: {{closest.name}})"
 
   no_raw_text_styles:
     constructor: TextStyle

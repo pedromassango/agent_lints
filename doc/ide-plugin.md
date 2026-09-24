@@ -51,7 +51,7 @@ agent_lints needs: the plugin still works. See
   in upper case (`NO_RAW_COLORS`); `--format=json` keeps `no_raw_colors`.
 - Severity comes from the rule's `severity` in `agent_lints.yaml`.
 - The tooltip shows the whole message on one line, then a correction built from
-  `use_instead`, `suggest`, `docs` and
+  `use_instead`, `hint`, `docs` and
   ``Run explain to learn more: `dart run agent_lints explain <rule>` ``.
 - Declarations (`class`, `function`, `variable`, `naming`) are underlined at
   their name; `file` rules at the first line.

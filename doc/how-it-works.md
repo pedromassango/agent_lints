@@ -68,7 +68,7 @@ the units the analysis server already resolved.
   It finds the nearest `agent_lints.yaml` for each file (cached by
   modification time), creates a `LintCode` per rule id with the configured
   severity, and reports with the rendered message as the problem text and a
-  correction built from `use_instead`, `suggest`, `docs` and the explain
+  correction built from `use_instead`, `hint`, `docs` and the explain
   command. Configs are discovered eagerly at start so codes exist before the
   first file is analyzed.
 

@@ -21,7 +21,7 @@ instructions.
    (`--changed` = files touched since the last commit; drop it to check
    everything.) The output is piped, so the `agent` format is used.
 
-2. Read each block. `why` explains the rule, `suggest` is a replacement
+2. Read each block. `why` explains the rule, `hint` is a replacement
    snippet, `docs` points to more. Edit the code accordingly.
 
 3. Re-run until the exit code is 0. Do not paste the `ignore` comment unless

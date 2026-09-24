@@ -9,6 +9,7 @@ lines; no `match:` wrapper. `banned` is `use`, `imports` is `deny_imports`,
 the declaration, `files` is `include`.
 
 - `constructor` replaces `new`; `from` is the package attribute (`package` still accepted); `from: flutter` also covers `material_ui`, `cupertino_ui` and `dart:ui`.
+- `hint` replaces `suggest` (rule field, CLI label, JSON and SARIF keys, IDE correction).
 - `args:` shorthands: `present`, `absent`, a value, a list.
 - `message` is optional; defaults to a sentence built from `use_instead`.
 - `explain --kinds` is generated from the node specs.

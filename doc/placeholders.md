@@ -1,11 +1,11 @@
 ---
 title: Placeholders
-description: Everything a message, suggest or use_instead string can interpolate.
+description: Everything a message, hint or use_instead string can interpolate.
 ---
 
 # Placeholders
 
-`message`, `suggest` and `description` are templates. `{{name}}` is replaced
+`message`, `hint` and `description` are templates. `{{name}}` is replaced
 at report time; a placeholder that is unknown, or not declared under `vars:` /
 `values:`, is a config error with a did-you-mean hint. A placeholder that has
 no value for a particular hit renders as empty text.
@@ -59,11 +59,11 @@ A violation should be a complete lesson for whoever reads it, human or agent:
 
 1. What was found: `{{found}}` or `{{name}}`.
 2. Why it is a problem: one sentence.
-3. What to write instead: `{{use_instead}}`, a `suggest` snippet, or the
+3. What to write instead: `{{use_instead}}`, a `hint` snippet, or the
    allowed values.
 4. Where to change things if the rule is too strict: a file path or `{{docs}}`.
 
 The IDE shows the message on one line followed by the correction (built from
-`use_instead`, `suggest`, `docs` and the explain command), so the first
+`use_instead`, `hint`, `docs` and the explain command), so the first
 sentence should stand on its own. Keep file paths out of the message when the
 IDE already shows them; put them in `docs` or `use_instead` instead.
