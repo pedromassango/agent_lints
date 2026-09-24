@@ -8,14 +8,6 @@ import '../../config/loader.dart';
 import '../../match/compiled_rule.dart';
 import '../../match/matcher_compiler.dart';
 import '../../match/matchers/args_matcher.dart';
-import '../../match/matchers/call_matcher.dart';
-import '../../match/matchers/declaration_matchers.dart';
-import '../../match/matchers/file_matcher.dart';
-import '../../match/matchers/import_matcher.dart';
-import '../../match/matchers/literal_matcher.dart';
-import '../../match/matchers/new_matcher.dart';
-import '../../match/matchers/ref_matcher.dart';
-import '../../match/matchers/variable_matcher.dart';
 import '../../report/message_template.dart';
 import '../exit_codes.dart';
 import '../project_files.dart';
@@ -153,54 +145,42 @@ class ExplainCommand extends Command<int> {
     }
   }
 
-  /// The `match:` reference, generated from the matcher classes so it never
+  /// The rule language reference, generated from the node specs so it never
   /// drifts from the code.
   static String kindsReference() {
     final b = StringBuffer();
     b.writeln(
-      'match: takes ONE node key plus optional context keys, or a combinator.',
+      'A rule has ONE node key (or a combinator) plus rule fields. The node\'s',
+    );
+    b.writeln(
+      'attributes, args: and context keys sit next to it under the rule name.',
     );
     b.writeln();
-    final kinds = <String, (String, List<String>)>{
-      'new': ('constructor calls', NewMatcher.keys),
-      'call': ('method and function calls', CallMatcher.keys),
-      'ref': (
-        'references that are not calls (Colors.red, tear-offs)',
-        RefMatcher.keys,
-      ),
-      'import': ('import / export directives', ImportMatcher.keys),
-      'class': (
-        'class / mixin / enum / extension declarations',
-        ClassMatcher.keys,
-      ),
-      'function': (
-        'function / method / constructor declarations',
-        FunctionMatcher.keys,
-      ),
-      'variable': ('top-level variables, fields, locals', VariableMatcher.keys),
-      'literal': (
-        'int / double / string / bool / null / list / map literals',
-        LiteralMatcher.keys,
-      ),
-      'file': ('the file itself, reported at line 1', FileMatcher.keys),
-    };
-    for (final e in kinds.entries) {
-      b.writeln('${e.key.padRight(10)}${e.value.$1}');
-      b.writeln('${''.padRight(10)}keys: ${e.value.$2.join(', ')}');
+    for (final spec in MatcherCompiler.specs.values) {
+      b.writeln('${spec.key.padRight(13)}${spec.description}');
+      b.writeln(
+        '${''.padRight(13)}${spec.shorthandKey} (bare value), '
+        '${spec.bodyKeys.where((k) => k != spec.shorthandKey).join(', ')}'
+        '${spec.acceptsArgs ? ', args' : ''}',
+      );
     }
     b.writeln();
     b.writeln(
-      'args:     ${ArgConstraint.keys.join(', ')}  (per parameter name, index, "*" or "**")',
+      'args:        <param>: present | absent | value | [values] | { ${ArgConstraint.keys.join(', ')} }',
     );
     b.writeln(
-      'context:  inside, not_inside, contains, not_contains  (inside supports direct: true)',
+      '             keys are parameter names, positional indexes, "*" (some) or "**" (all)',
     );
     b.writeln(
-      'combine:  ${MatcherCompiler.combinatorKeys.join(', ')}  (not only nested)',
+      'context:     ${MatcherCompiler.contextKeys.join(', ')}  (each takes a matcher map, e.g. { new: Column })',
     );
     b.writeln(
-      'patterns: exact | glob (*, ?) | /regex/ | [any, of] | {not: pattern}',
+      'combine:     ${MatcherCompiler.combinatorKeys.join(', ')}  (not only nested)',
     );
+    b.writeln(
+      'patterns:    exact | glob (*, ?) | /regex/ | [any, of] | { not: pattern } | { style: snake_case } | { not_style: .. }',
+    );
+    b.writeln('rule fields: ${ConfigLoader.ruleFieldKeys.join(', ')}');
     b.writeln();
     b.writeln(
       'placeholders: ${MessageTemplate.common.join(', ')}, vars.*, values.*, args.*',

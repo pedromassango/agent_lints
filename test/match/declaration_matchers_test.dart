@@ -22,13 +22,13 @@ Future<void> load() async {}
 void sync() {}
 ''';
 
-  group('class matcher', () {
+  group('class', () {
     test('extends walks the superclass chain; name not-pattern', () async {
       final v = await lint(
-        rule('screens', '''
-    match: { class: { extends: Widget, name: { not: "*Screen" } } }
-    message: "{{name}} ({{kind}})"
-'''),
+        rule(
+          'screens',
+          '    class: { extends: Widget }\n    name: { not: "*Screen" }\n    message: "{{name}} ({{kind}})"\n',
+        ),
         {'lib/screens/a.dart': code},
       );
       expect(v.map((x) => x.message), ['Home (class)']);
@@ -37,43 +37,44 @@ void sync() {}
     test('lacks / has member matchers', () async {
       final v = await lint(
         rule('const_ctor', '''
-    match: { class: { extends: StatelessWidget, lacks: { function: { kind: constructor, const: true } } } }
+    class: { extends: StatelessWidget }
+    lacks: { function: { kind: constructor, const: true } }
     message: "{{name}}"
 '''),
         {'lib/a.dart': code},
       );
       expect(v.map((x) => x.message), ['Home']);
       final has = await lint(
-        rule('r', '''
-    match: { class: { has: { function: { name: build, override: true } } } }
-    message: "{{name}}"
-'''),
+        rule(
+          'r',
+          '    class: any\n    has: { function: { name: build, override: true } }\n    message: "{{name}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(has.map((x) => x.message), ['HomeScreen', 'Home']);
     });
   });
 
-  group('function matcher', () {
+  group('function', () {
     test('kind, async and returns', () async {
       final v = await lint(
-        rule('r', '''
-    match: { function: { kind: function, async: true, returns: Future } }
-    message: "{{name}}"
-'''),
+        rule(
+          'r',
+          '    function: any\n    kind: function\n    async: true\n    returns: Future\n    message: "{{name}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(v.map((x) => x.message), ['load']);
     });
   });
 
-  group('variable matcher', () {
+  group('variable', () {
     test('scope, const and type', () async {
       final v = await lint(
-        rule('r', '''
-    match: { variable: { scope: top_level, const: true, type: int } }
-    message: "{{name}}:{{type}}"
-'''),
+        rule(
+          'r',
+          '    variable: any\n    scope: top_level\n    const: true\n    type: int\n    message: "{{name}}:{{type}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(v.map((x) => x.message), ['kTimeout:int']);
@@ -81,10 +82,10 @@ void sync() {}
 
     test('initializer matcher', () async {
       final v = await lint(
-        rule('r', '''
-    match: { variable: { initializer: { new: { name: Text } } } }
-    message: "{{name}} = {{found}}"
-'''),
+        rule(
+          'r',
+          '    variable: any\n    initializer: { new: Text }\n    message: "{{name}} = {{found}}"\n',
+        ),
         {
           'lib/a.dart':
               "import 'package:flutter/material.dart';\nfinal t = Text('x');\nfinal n = 1;\n",
@@ -94,13 +95,13 @@ void sync() {}
     });
   });
 
-  group('literal matcher', () {
+  group('literal', () {
     test('string literals by source regex, skipping import uris', () async {
       final v = await lint(
-        rule('no_urls', '''
-    match: { literal: { kind: string, source: "/^'https?:/" } }
-    message: "{{value}}"
-'''),
+        rule(
+          'no_urls',
+          '    literal: string\n    source: "/^\'https?:/"\n    message: "{{value}}"\n',
+        ),
         {
           'lib/a.dart':
               "import 'package:http/http.dart';\nconst a = 'https://x.dev';\nconst b = 'nope';\nconst c = 'http://y';\n",
@@ -111,23 +112,20 @@ void sync() {}
 
     test('numeric literal ranges and kinds', () async {
       final v = await lint(
-        rule('r', '''
-    match: { literal: { kind: num, min: 100 } }
-    message: "{{value}}:{{kind}}"
-'''),
+        rule(
+          'r',
+          '    literal: num\n    min: 100\n    message: "{{value}}:{{kind}}"\n',
+        ),
         {'lib/a.dart': 'const a = 1;\nconst b = 250;\nconst c = 300.5;\n'},
       );
       expect(v.map((x) => x.message), ['250:int', '300.5:double']);
     });
   });
 
-  group('file matcher', () {
+  group('file', () {
     test('matches by base name and reports line 1', () async {
       final v = await lint(
-        rule('r', '''
-    match: { file: { name: "/[A-Z]/" } }
-    message: "{{name}} in {{file}}"
-'''),
+        rule('r', '    file: "/[A-Z]/"\n    message: "{{name}} in {{file}}"\n'),
         {
           'lib/HomeScreen.dart': 'class A {}\n',
           'lib/home_screen.dart': 'class B {}\n',

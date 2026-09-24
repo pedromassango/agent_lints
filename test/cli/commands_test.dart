@@ -21,13 +21,14 @@ void main() {
     setUp(() async {
       project = await TestProject.create(
         yaml: '''
-version: 1
+version: 2
 rules:
   no_print:
     severity: error
     description: Use the logger
-    files: [lib/features/**]
-    match: { call: { name: print, package: dart:core } }
+    include: [lib/features/**]
+    call: print
+    package: dart:core
     use_instead: AppLog.d
     suggest: "AppLog.d({{args.0}})"
     docs: docs/logging.md
@@ -51,7 +52,7 @@ rules:
       expect(code, 0);
       expect(out, '''
 no_print  (error)  Use the logger
-  kind        match
+  kind        call
   scope       lib/features/**
   matches     call name=print package=dart:core
   message     no print. Use {{use_instead}}.
@@ -78,9 +79,17 @@ no_print  (error)  Use the logger
     test('--kinds prints the reference generated from the matchers', () async {
       final (code, out, _) = await run(['explain', '--kinds']);
       expect(code, 0);
-      expect(out, contains('new       constructor calls'));
-      expect(out, contains('keys: name, package, library, const, type, args'));
-      expect(out, contains('args:     present, literal, value, in, not_in'));
+      expect(out, contains('new          constructor calls'));
+      expect(
+        out,
+        contains('name (bare value), package, library, const, type, args'),
+      );
+      expect(
+        out,
+        contains(
+          'args:        <param>: present | absent | value | [values] | { present, literal, value, in, not_in',
+        ),
+      );
       expect(out, contains('placeholders: rule, severity, file'));
     });
   });
@@ -89,17 +98,19 @@ no_print  (error)  Use the logger
     test('bad examples must trigger, good ones must not', () async {
       final project = await TestProject.create(
         yaml: '''
-version: 1
+version: 2
 rules:
   no_print:
-    files: [lib/features/**]
-    match: { call: { name: print, package: dart:core } }
+    include: [lib/features/**]
+    call: print
+    package: dart:core
     message: no print
     examples:
       bad: ["void f() { print(1); }"]
       good: ["void f() {}"]
   taps:
-    match: { new: { name: GestureDetector, args: { onTap: { present: true } } } }
+    new: GestureDetector
+    args: { onTap: present }
     message: no taps
     examples:
       bad:

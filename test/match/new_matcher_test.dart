@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../support/test_project.dart';
 
 void main() {
-  group('new matcher', () {
+  group('new', () {
     const widgets = '''
 import 'package:flutter/material.dart';
 Widget build() {
@@ -17,10 +17,10 @@ Widget other() => GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: cons
 
     test('matches by class name across any constructor', () async {
       final v = await lint(
-        rule('r', '''
-    match: { new: EdgeInsets }
-    message: "{{name}} {{short_name}} {{package}}"
-'''),
+        rule(
+          'r',
+          '    new: EdgeInsets\n    message: "{{name}} {{short_name}} {{package}}"\n',
+        ),
         {'lib/a.dart': widgets},
       );
       expect(v.single.message, 'EdgeInsets.all all flutter');
@@ -29,30 +29,25 @@ Widget other() => GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: cons
 
     test('named constructor and glob patterns', () async {
       final all = await lint(
-        rule('r', '''
-    match: { new: { name: EdgeInsets.symmetric } }
-    message: x
-'''),
+        rule('r', '    new: EdgeInsets.symmetric\n    message: x\n'),
         {'lib/a.dart': widgets},
       );
       expect(all, isEmpty);
       final glob = await lint(
-        rule('r', '''
-    match: { new: { name: "EdgeInsets.*", package: [flutter, material_ui] } }
-    message: x
-'''),
+        rule(
+          'r',
+          '    new: "EdgeInsets.*"\n    package: [flutter, material_ui]\n    message: x\n',
+        ),
         {'lib/a.dart': widgets},
       );
       expect(glob, hasLength(1));
     });
 
-    test('args present / absent', () async {
+    test('args present / absent shorthands', () async {
       final v = await lint(
         rule('taps', '''
-    match:
-      new:
-        name: GestureDetector
-        args: { onTap: { present: true }, onPanUpdate: { present: false } }
+    new: GestureDetector
+    args: { onTap: present, onPanUpdate: absent }
     message: "line {{line}} {{args.onTap}}"
 '''),
         {'lib/a.dart': widgets},
@@ -62,10 +57,10 @@ Widget other() => GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: cons
 
     test('type subtype check and const filter', () async {
       final v = await lint(
-        rule('r', '''
-    match: { new: { name: "*", type: Widget, const: true } }
-    message: "{{name}}"
-'''),
+        rule(
+          'r',
+          '    new: "*"\n    type: Widget\n    const: true\n    message: "{{name}}"\n',
+        ),
         {'lib/a.dart': widgets},
       );
       expect(v.map((x) => x.message), ['Text', 'Text']);
@@ -74,13 +69,10 @@ Widget other() => GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: cons
     test('nested expr and ref constraints on arguments', () async {
       final v = await lint(
         rule('adhoc_card', '''
-    match:
-      new:
-        name: Container
-        args:
-          decoration:
-            expr:
-              new: { name: BoxDecoration, args: { color: { present: true } } }
+    new: Container
+    args:
+      decoration:
+        expr: { new: BoxDecoration, args: { color: present } }
     message: "found {{found}}"
 '''),
         {
@@ -95,10 +87,8 @@ final c = Container(color: Colors.red);
       expect(v.single.line, 2);
       final ref = await lint(
         rule('raw_color_ref', '''
-    match:
-      new:
-        name: Container
-        args: { color: { ref: { name: "Colors.*", package: flutter } } }
+    new: Container
+    args: { color: { ref: { name: "Colors.*", package: flutter } } }
     message: "{{args.color}} -> {{name}}"
 '''),
         {

@@ -120,7 +120,7 @@ List<ConfigError> configErrors(String yaml) {
 /// A rule body wrapped in a valid config.
 String rule(String id, String body) =>
     '''
-version: 1
+version: 2
 rules:
   $id:
 $body

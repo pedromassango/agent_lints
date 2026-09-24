@@ -4,10 +4,11 @@ import '../support/test_project.dart';
 
 void main() {
   const yaml = '''
-version: 1
+version: 2
 rules:
   no_print:
-    match: { call: { name: print, package: dart:core } }
+    call: print
+    package: dart:core
     message: no print
 ''';
 

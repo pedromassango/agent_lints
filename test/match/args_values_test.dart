@@ -5,7 +5,7 @@ import '../support/test_project.dart';
 void main() {
   group('args value constraints and values lists', () {
     const yaml = '''
-version: 1
+version: 2
 values:
   spacing:
     - 4
@@ -13,10 +13,8 @@ values:
     - { value: 16, name: AppSpacing.md }
 rules:
   spacing_on_scale:
-    match:
-      new:
-        name: [EdgeInsets.all, EdgeInsets.symmetric, SizedBox]
-        args: { "*": { literal: num, not_in: \$spacing } }
+    new: [EdgeInsets.all, EdgeInsets.symmetric, SizedBox]
+    args: { "*": { literal: num, not_in: \$spacing } }
     message: "{{value}} to {{name}}({{arg}}) off scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
 ''';
@@ -49,34 +47,42 @@ final e = SizedBox(width: dyn());
       'const references count as values; non-const args never match',
       () async {
         final v = await lint(
-          rule('r', '''
-    match: { new: { name: SizedBox, args: { height: { not_in: [4, 8] } } } }
-    message: "{{value}}"
-'''),
+          rule(
+            'r',
+            '    new: SizedBox\n    args: { height: { not_in: [4, 8] } }\n    message: "{{value}}"\n',
+          ),
           {'lib/a.dart': code},
         );
-        // kPad is const 10 -> flagged; dyn() is not constant -> ignored.
         expect(v.single.message, '10');
       },
     );
 
-    test('value, min, max and literal kinds', () async {
+    test('value, min, max, literal kinds and list shorthand', () async {
       final v = await lint(
         rule('r', '''
-    match: { new: { name: EdgeInsets.symmetric, args: { horizontal: { value: 16 }, vertical: { min: 10, max: 14, literal: int } } } }
+    new: EdgeInsets.symmetric
+    args: { horizontal: 16, vertical: { min: 10, max: 14, literal: int } }
     message: ok
 '''),
         {'lib/a.dart': code},
       );
       expect(v, hasLength(1));
+      final list = await lint(
+        rule(
+          'r',
+          '    new: EdgeInsets.symmetric\n    args: { horizontal: [8, 16] }\n    message: ok\n',
+        ),
+        {'lib/a.dart': code},
+      );
+      expect(list, hasLength(1));
     });
 
     test('positional args are addressable by parameter name or index', () async {
       final byName = await lint(
-        rule('r', '''
-    match: { new: { name: Text, args: { data: { source: "/^'x/" } } } }
-    message: "{{args.data}}"
-'''),
+        rule(
+          'r',
+          '    new: Text\n    args: { data: { source: "/^\'x/" } }\n    message: "{{args.data}}"\n',
+        ),
         {
           'lib/a.dart':
               "import 'package:flutter/material.dart';\nfinal t = Text('xy');\n",
@@ -84,10 +90,10 @@ final e = SizedBox(width: dyn());
       );
       expect(byName.single.message, "'xy'");
       final byIndex = await lint(
-        rule('r', '''
-    match: { new: { name: Text, args: { 0: { literal: string } } } }
-    message: "{{args.0}}"
-'''),
+        rule(
+          'r',
+          '    new: Text\n    args: { 0: { literal: string } }\n    message: "{{args.0}}"\n',
+        ),
         {
           'lib/a.dart':
               "import 'package:flutter/material.dart';\nfinal t = Text('xy');\n",

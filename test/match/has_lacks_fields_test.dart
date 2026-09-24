@@ -6,8 +6,8 @@ void main() {
   test('has / lacks match static fields inside a class', () async {
     final v = await lint(
       rule('declare_keys', '''
-    match:
-      class: { lacks: { variable: { name: keys, static: true } } }
+    class: any
+    lacks: { variable: keys, static: true }
     message: "{{name}} lacks keys"
 '''),
       {
@@ -27,21 +27,16 @@ class Without {}
   test(
     'declarations are reported at their name token, not the whole body',
     () async {
-      final v = await lint(
-        rule('r', '''
-    match: { class: { name: Long } }
-    message: "{{found}}"
-'''),
-        {
-          'lib/a.dart': '''
+      final v =
+          await lint(rule('r', '    class: Long\n    message: "{{found}}"\n'), {
+            'lib/a.dart': '''
 /// Doc comment.
 @Deprecated('x')
 class Long {
   int a = 1;
 }
 ''',
-        },
-      );
+          });
       expect(v.single.line, 3);
       expect(v.single.column, 7);
       expect(v.single.length, 'Long'.length);

@@ -26,14 +26,13 @@ class HomeScreen extends StatelessWidget {
 ''',
   };
 
-  group('imports kind', () {
-    test('deny by uri glob with from / except and replace_with', () async {
+  group('deny_imports', () {
+    test('uri glob with include and replace_with', () async {
       final v = await lint(
         rule('features_no_material', '''
-    imports:
-      from: [lib/features/**]
-      deny: ["package:flutter/material.dart"]
-      replace_with: package:test_app/ui.dart
+    deny_imports: ["package:flutter/material.dart"]
+    replace_with: package:test_app/ui.dart
+    include: [lib/features/**]
     message: "{{uri}} -> {{use_instead}}"
 '''),
         files,
@@ -42,13 +41,13 @@ class HomeScreen extends StatelessWidget {
         v.single.message,
         'package:flutter/material.dart -> package:test_app/ui.dart',
       );
-      expect(v.single.useInstead, 'package:test_app/ui.dart');
     });
 
-    test('deny by package glob and except', () async {
+    test('package glob with exclude', () async {
       final v = await lint(
         rule('http_only_in_network', '''
-    imports: { deny: ["package:http/**"], except: [lib/network/**] }
+    deny_imports: ["package:http/**"]
+    exclude: [lib/network/**]
     message: "{{file}}"
 '''),
         files,
@@ -59,42 +58,38 @@ class HomeScreen extends StatelessWidget {
       ]);
     });
 
-    test('deny relative and project path globs', () async {
+    test('relative and project path globs', () async {
       final rel = await lint(
-        rule('r', '''
-    imports: { deny: [relative] }
-    message: "{{uri}}"
-'''),
+        rule('r', '    deny_imports: [relative]\n    message: "{{uri}}"\n'),
         files,
       );
       expect(rel.single.message, '../data/repo.dart');
       final path = await lint(
-        rule('r', '''
-    imports: { deny: ["lib/data/**"] }
-    message: "{{resolved_path}} ({{denied}})"
-'''),
+        rule(
+          'r',
+          '    deny_imports: ["lib/data/**"]\n    message: "{{resolved_path}} ({{denied}})"\n',
+        ),
         files,
       );
       expect(path.single.message, 'lib/data/repo.dart (lib/data/**)');
     });
 
-    test('deny is required', () {
-      final errors = configErrors(
-        rule('r', '    imports: { from: [lib/**] }\n    message: x\n'),
-      );
+    test('an empty list is an error', () {
+      final errors = configErrors(rule('r', '    deny_imports: []\n'));
       expect(
         errors.map((e) => e.message),
-        contains('missing required key "deny"'),
+        contains('deny_imports needs at least one entry'),
       );
     });
   });
 
-  group('naming kind', () {
-    test('class target with where and pattern', () async {
+  group('naming with name patterns and styles', () {
+    test('class not matching a pattern', () async {
       final v = await lint(
         rule('screens_named_screen', '''
-    files: [lib/screens/**]
-    naming: { target: class, where: { extends: StatelessWidget }, pattern: "*Screen" }
+    class: { extends: StatelessWidget }
+    name: { not: "*Screen" }
+    include: [lib/screens/**]
     message: "{{name}} must end with Screen"
 '''),
         files,
@@ -102,28 +97,22 @@ class HomeScreen extends StatelessWidget {
       expect(v.single.message, 'HomeView must end with Screen');
     });
 
-    test('style: snake_case on files', () async {
+    test('not_style on files', () async {
       final v = await lint(
-        rule('r', '''
-    naming: { target: file, style: snake_case }
-    message: "{{name}}"
-'''),
+        rule(
+          'r',
+          '    file: { name: { not_style: snake_case } }\n    message: "{{name}}"\n',
+        ),
         {'lib/HomeScreen.dart': '', 'lib/home_screen.dart': ''},
       );
       expect(v.single.message, 'HomeScreen');
     });
 
-    test('validation: target and style values', () {
+    test('unknown style is an error', () {
       final errors = configErrors(
-        rule('r', '''
-    naming: { target: widget, style: kebab }
-    message: x
-'''),
+        rule('r', '    file: { name: { style: kebab } }\n'),
       );
-      expect(
-        errors.map((e) => e.message),
-        containsAll(['invalid target "widget"', 'invalid style "kebab"']),
-      );
+      expect(errors.single.message, 'unknown style "kebab"');
     });
   });
 }

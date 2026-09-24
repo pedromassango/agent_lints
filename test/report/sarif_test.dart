@@ -7,13 +7,13 @@ void main() {
   test('SarifFormatter emits rules and results', () {
     final config = ConfigLoader().load(
       content: '''
-version: 1
+version: 2
 rules:
   no_print:
     severity: error
     description: no print
     docs: https://example.com/no-print
-    match: { call: print }
+    call: print
     message: "no print"
 ''',
       configPath: '/p/agent_lints.yaml',

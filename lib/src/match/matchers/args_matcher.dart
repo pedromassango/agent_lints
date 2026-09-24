@@ -157,6 +157,30 @@ class ArgsMatcher {
     final r = YamlReader(node, parent.childPath(key), parent.errors);
     final out = <String, ArgConstraint>{};
     for (final argKey in r.keys) {
+      final raw = r.map.nodes[argKey];
+      // Shorthands: `present`, `absent`, a list (one of), a scalar (equals).
+      if (raw is YamlScalar) {
+        final v = raw.value;
+        if (v == 'present') {
+          out[argKey] = ArgConstraint(present: true);
+        } else if (v == 'absent') {
+          out[argKey] = ArgConstraint(present: false);
+        } else if (v is num || v is String || v is bool) {
+          out[argKey] = ArgConstraint(value: ConstValue(v));
+        } else {
+          r.error(
+            'expected present, absent, a value, a list or a map',
+            key: argKey,
+          );
+        }
+        continue;
+      }
+      if (raw is YamlList) {
+        out[argKey] = ArgConstraint(
+          inList: raw.nodes.map((e) => e.value).toList(),
+        );
+        continue;
+      }
       final c = r.child(argKey);
       if (c == null) continue;
       c.rejectUnknownKeys(ArgConstraint.keys);

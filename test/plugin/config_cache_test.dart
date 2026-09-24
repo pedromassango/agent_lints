@@ -18,18 +18,18 @@ void main() {
 
     write('pubspec.yaml', 'name: top\n');
     write('agent_lints.yaml', '''
-version: 1
+version: 2
 rules:
-  top_rule: { severity: error, match: { call: print }, message: x }
+  top_rule: { severity: error, call: print, message: x }
 ''');
     write('packages/app/pubspec.yaml', 'name: app\n');
     write('packages/app/agent_lints.yaml', '''
-version: 1
+version: 2
 rules:
-  app_rule: { match: { call: print }, message: x }
+  app_rule: { call: print, message: x }
 ''');
-    write('packages/broken/agent_lints.yaml', 'version: 1\nrules: []\n');
-    write('build/agent_lints.yaml', 'version: 1\nrules: {}\n');
+    write('packages/broken/agent_lints.yaml', 'version: 2\nrules: []\n');
+    write('build/agent_lints.yaml', 'version: 2\nrules: {}\n');
   });
   tearDown(() => root.delete(recursive: true));
 
@@ -64,9 +64,9 @@ rules:
     await Future<void>.delayed(const Duration(milliseconds: 1100));
     File(p.join(root.path, 'packages/app/agent_lints.yaml')).writeAsStringSync(
       '''
-version: 1
+version: 2
 rules:
-  renamed: { match: { call: print }, message: x }
+  renamed: { call: print, message: x }
 ''',
     );
     expect(cache.forFile(appFile)!.config!.rules.single.id, 'renamed');

@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../support/test_project.dart';
 
 void main() {
-  group('import matcher', () {
+  group('import', () {
     const files = {
       'lib/features/home.dart': '''
 import 'package:flutter/material.dart';
@@ -18,8 +18,8 @@ export 'package:flutter/widgets.dart';
     test('matches by uri glob with file scoping', () async {
       final v = await lint(
         rule('features_no_material', '''
-    files: [lib/features/**]
-    match: { import: "package:flutter/material.dart" }
+    include: [lib/features/**]
+    import: "package:flutter/material.dart"
     message: "{{uri}} from {{package}}"
 '''),
         files,
@@ -32,7 +32,7 @@ export 'package:flutter/widgets.dart';
       final v = await lint(
         rule('http_only_in_network', '''
     exclude: [lib/network/**]
-    match: { import: { package: http, prefix: http, show: get } }
+    import: { package: http, prefix: http, show: get }
     message: "{{uri}}"
 '''),
         files,
@@ -43,31 +43,31 @@ export 'package:flutter/widgets.dart';
     test('relative imports resolve to project paths', () async {
       final v = await lint(
         rule('no_relative_imports', '''
-    match: { import: { relative: true } }
-    message: "{{uri}} -> {{resolved_path}} ({{package}})"
+    import: { relative: true }
+    message: "{{uri}} -> {{resolved_path}} ({{package}}) {{package_path}}"
 '''),
         files,
       );
       expect(
         v.single.message,
-        '../data/repo.dart -> lib/data/repo.dart (test_app)',
+        '../data/repo.dart -> lib/data/repo.dart (test_app) package:test_app/data/repo.dart',
       );
     });
 
     test('kind: export and kind: any', () async {
       final exports = await lint(
-        rule('r', '''
-    match: { import: { kind: export, package: flutter } }
-    message: "{{uri}}"
-'''),
+        rule(
+          'r',
+          '    import: { kind: export, package: flutter }\n    message: "{{uri}}"\n',
+        ),
         files,
       );
       expect(exports.single.message, 'package:flutter/widgets.dart');
       final any = await lint(
-        rule('r', '''
-    match: { import: { kind: any, package: flutter } }
-    message: x
-'''),
+        rule(
+          'r',
+          '    import: { kind: any, package: flutter }\n    message: x\n',
+        ),
         files,
       );
       expect(any, hasLength(2));

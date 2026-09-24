@@ -34,7 +34,23 @@ abstract class StringPattern {
     }
     if (node is YamlMap) {
       final sub = YamlReader(node, reader.childPath(key), reader.errors);
-      sub.rejectUnknownKeys(['not']);
+      sub.rejectUnknownKeys(['not', 'style', 'not_style']);
+      final style = sub.string('style');
+      final notStyle = sub.string('not_style');
+      if (style != null || notStyle != null) {
+        final name = style ?? notStyle!;
+        final regex = styles[name];
+        if (regex == null) {
+          sub.error(
+            'unknown style "$name"',
+            key: style != null ? 'style' : 'not_style',
+            hint: 'allowed: ${styles.keys.join(', ')}',
+          );
+          return null;
+        }
+        final pat = RegexPattern(regex);
+        return style != null ? pat : NotPattern(pat);
+      }
       final inner = fromNode(node.nodes['not'], sub, 'not');
       if (inner == null) return null;
       return NotPattern(inner);
@@ -42,6 +58,14 @@ abstract class StringPattern {
     reader.error('expected a pattern', key: key);
     return null;
   }
+
+  /// Identifier styles usable as `{ style: snake_case }` / `{ not_style: .. }`.
+  static final styles = <String, RegExp>{
+    'snake_case': RegExp(r'^_?[a-z][a-z0-9]*(_[a-z0-9]+)*$'),
+    'camelCase': RegExp(r'^_?[a-z][a-zA-Z0-9]*$'),
+    'PascalCase': RegExp(r'^_?[A-Z][a-zA-Z0-9]*$'),
+    'SCREAMING_SNAKE_CASE': RegExp(r'^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'),
+  };
 
   static StringPattern fromString(
     String text, {

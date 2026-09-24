@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../support/test_project.dart';
 
 void main() {
-  group('ref matcher', () {
+  group('ref and use', () {
     const code = '''
 import 'package:flutter/material.dart';
 const a = Colors.red;
@@ -15,12 +15,12 @@ void f(BuildContext ctx) {
 }
 ''';
 
-    test('matches static members by Class.* pattern', () async {
+    test('ref matches static members by Class.* pattern', () async {
       final v = await lint(
-        rule('no_palette', '''
-    match: { ref: { name: "Colors.*", package: flutter } }
-    message: "{{name}}:{{type}}"
-'''),
+        rule(
+          'no_palette',
+          '    ref: "Colors.*"\n    package: flutter\n    message: "{{name}}:{{type}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(v.map((x) => x.message), [
@@ -32,19 +32,19 @@ void f(BuildContext ctx) {
 
     test('type filter and property access chains', () async {
       final v = await lint(
-        rule('r', '''
-    match: { ref: { name: primary, type: Color } }
-    message: "{{name}}"
-'''),
+        rule(
+          'r',
+          '    ref: primary\n    type: Color\n    message: "{{name}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(v.single.message, 'ColorScheme.primary');
     });
 
-    test('banned expands to new, call and ref', () async {
+    test('use matches constructors, calls and references', () async {
       final v = await lint(
         rule('no_opacity', '''
-    banned: [Opacity, .withOpacity, Colors.red]
+    use: [Opacity, .withOpacity, Colors.red]
     use_instead: AppFade
     message: "{{name}} is banned; use {{use_instead}}"
 '''),
@@ -62,6 +62,19 @@ const r = Colors.red;
         'Color.withOpacity is banned; use AppFade',
         'Colors.red is banned; use AppFade',
       ]);
+    });
+
+    test('except removes a sub-case', () async {
+      final v = await lint(
+        rule('no_palette', '''
+    use: "Colors.*"
+    package: flutter
+    except: { use: Colors.transparent }
+    message: "{{name}}"
+'''),
+        {'lib/a.dart': code},
+      );
+      expect(v.map((x) => x.message), ['Colors.red', 'Colors.red']);
     });
   });
 }

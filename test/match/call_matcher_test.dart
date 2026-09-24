@@ -3,11 +3,12 @@ import 'package:test/test.dart';
 import '../support/test_project.dart';
 
 void main() {
-  group('call matcher', () {
+  group('call', () {
     test('matches a top-level function by name and package', () async {
       final v = await lint(
         rule('no_print', '''
-    match: { call: { name: print, package: dart:core } }
+    call: print
+    package: dart:core
     message: "no print in {{file}} ({{enclosing_function}})"
 '''),
         {
@@ -26,9 +27,8 @@ void main() {
       () async {
         final v = await lint(
           rule('no_setstate_in_build', '''
-    match:
-      call: { name: State.setState }
-      inside: { function: { name: build } }
+    call: State.setState
+    inside: { function: build }
     message: "{{name}} inside {{enclosing_class}}.{{enclosing_function}}"
 '''),
           {
@@ -62,18 +62,15 @@ void f(BuildContext c, List<int> list) {
 }
 ''';
       final any = await lint(
-        rule('r', '''
-    match: { call: { name: push } }
-    message: "{{name}}"
-'''),
+        rule('r', '    call: push\n    message: "{{name}}"\n'),
         {'lib/a.dart': code},
       );
       expect(any.map((v) => v.message), ['NavigatorState.push']);
       final onType = await lint(
-        rule('r', '''
-    match: { call: { name: add, on: { type: List } } }
-    message: "{{name}} on {{receiver}}"
-'''),
+        rule(
+          'r',
+          '    call: add\n    on: { type: List }\n    message: "{{name}} on {{receiver}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(onType.single.message, 'List.add on list');
@@ -81,10 +78,10 @@ void f(BuildContext c, List<int> list) {
 
     test('package: project matches the analyzed package', () async {
       final v = await lint(
-        rule('r', '''
-    match: { call: { name: helper, package: project } }
-    message: "{{package}}"
-'''),
+        rule(
+          'r',
+          '    call: helper\n    package: project\n    message: "{{package}}"\n',
+        ),
         {
           'lib/a.dart':
               "import 'b.dart';\nvoid main() { helper(); print(1); }\n",
@@ -105,18 +102,18 @@ Future<void> f() async {
 }
 ''';
       final notAwaited = await lint(
-        rule('r', '''
-    match: { call: { name: Api.load, await: false } }
-    message: "{{line}}"
-'''),
+        rule(
+          'r',
+          '    call: Api.load\n    await: false\n    message: "{{line}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(notAwaited.map((v) => v.line), [5]);
       final httpGet = await lint(
-        rule('r', '''
-    match: { call: { name: get, package: http } }
-    message: "{{name}} from {{package}}"
-'''),
+        rule(
+          'r',
+          '    call: get\n    package: http\n    message: "{{name}} from {{package}}"\n',
+        ),
         {'lib/a.dart': code},
       );
       expect(httpGet.single.message, 'get from http');

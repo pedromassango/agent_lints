@@ -25,9 +25,8 @@ string\'\'\');
     () async {
       final v = await lint(
         rule('small_widget_files', '''
-    match:
-      file: { max_code_lines: 8 }
-      contains: { class: { extends: Widget } }
+    file: { max_code_lines: 8 }
+    contains: { class: { extends: Widget } }
     message: "{{file}}: {{code_lines}} code lines, {{lines}} total"
 '''),
         {
@@ -45,18 +44,15 @@ string\'\'\');
 
   test('files within the bound do not match; min bounds work', () async {
     final ok = await lint(
-      rule('r', '''
-    match: { file: { max_lines: 14 } }
-    message: x
-'''),
+      rule('r', '    file: any\n    max_lines: 14\n    message: x\n'),
       {'lib/big.dart': widget},
     );
     expect(ok, isEmpty);
     final tiny = await lint(
-      rule('r', '''
-    match: { file: { min_code_lines: 3 } }
-    message: "{{code_lines}}"
-'''),
+      rule(
+        'r',
+        '    file: any\n    min_code_lines: 3\n    message: "{{code_lines}}"\n',
+      ),
       {'lib/a.dart': 'class A {}\n', 'lib/b.dart': widget},
     );
     expect(tiny.single.message, '1');

@@ -98,9 +98,12 @@ class ImportMatcher extends Matcher {
     if (resolvedUri != null) captures['library'] = resolvedUri;
     final fullPath = library?.firstFragment.source.fullName;
     if (fullPath != null && p.isWithin(ctx.rootPath, fullPath)) {
-      captures['resolved_path'] = p.posix.joinAll(
+      final rel = p.posix.joinAll(
         p.split(p.relative(fullPath, from: ctx.rootPath)),
       );
+      captures['resolved_path'] = rel;
+      final pkgPath = packagePathOf(rel, ctx.packageName);
+      if (pkgPath != null) captures['package_path'] = pkgPath;
     }
     captures['name'] = uriText;
     return MatchResult(node, captures);
