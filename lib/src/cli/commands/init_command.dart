@@ -127,7 +127,7 @@ class InitCommand extends Command<int> {
 #       dart run agent_lints validate   (check this file only)
 #       dart run agent_lints explain <rule> | --kinds
 #       dart run agent_lints test       (run each rule's examples)
-version: 1
+version: 2
 include: [lib/**]
 fail_on: warning
 
@@ -139,7 +139,8 @@ rules:
   no_print:
     severity: error
     description: Use the project logger instead of print
-    match: { call: { name: print, package: dart:core } }
+    call: print
+    package: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
@@ -150,47 +151,49 @@ rules:
   # --- Starters (uncomment and adapt) -----------------------------------
   #
   # no_gesture_detector_for_taps:
-  #   match:
-  #     new:
-  #       name: GestureDetector
-  #       package: $pkg
-  #       args: { onTap: { present: true }, onPanUpdate: { present: false } }
+  #   new: GestureDetector
+  #   package: $pkg
+  #   args: { onTap: present, onPanUpdate: absent }
   #   use_instead: InkWell (ripple + semantics)
   #   message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
   #
   # features_no_material:              # layering
   #   severity: error
-  #   imports:
-  #     from: [lib/features/**]
-  #     deny: [package:flutter/material.dart]
-  #     replace_with: package:$packageName/ui/ui.dart
+  #   deny_imports: [package:flutter/material.dart]
+  #   include: [lib/features/**]
+  #   replace_with: package:$packageName/ui/ui.dart
   #   message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
   #
   # http_only_in_network:
-  #   imports: { deny: ["package:http/**", "package:dio/**"], except: [lib/network/**] }
+  #   deny_imports: ["package:http/**", "package:dio/**"]
+  #   exclude: [lib/network/**]
   #   message: "Only lib/network may talk HTTP."
   #
   # no_setstate_in_build:
-  #   match:
-  #     call: { name: State.setState }
-  #     inside: { function: { name: build } }
+  #   call: State.setState
+  #   inside: { function: build }
   #   message: "setState inside build() causes rebuild loops."
   #
   # screens_named_screen:              # naming
-  #   files: [lib/screens/**]
-  #   naming: { target: class, where: { extends: StatefulWidget }, pattern: "*Screen" }
+  #   class: { extends: StatefulWidget }
+  #   name: { not: "*Screen" }
+  #   include: [lib/screens/**]
   #   message: "{{name}} under lib/screens must end with Screen."
   #
   # spacing_on_scale:                  # design tokens
-  #   match:
-  #     new:
-  #       name: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
-  #       args: { "*": { literal: num, not_in: \$spacing } }
+  #   new: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+  #   args: { "*": { literal: num, not_in: \$spacing } }
   #   message: "{{value}} is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
   #
+  # small_widget_files:
+  #   file: { max_code_lines: 100 }
+  #   contains: { class: { extends: Widget } }
+  #   message: "{{code_lines}} lines of code in a widget file; the limit is 100."
+  #
   # no_hardcoded_urls:
+  #   literal: string
+  #   source: "/^'https?:/"
   #   exclude: [lib/config/**]
-  #   match: { literal: { kind: string, source: "/^'https?:/" } }
   #   message: "URL literal {{found}} belongs in lib/config/endpoints.dart."
 ''';
   }
@@ -314,8 +317,10 @@ Useful flags: `--changed` (files touched since the last commit),
 ## Add or change a rule
 
 1. `dart run agent_lints explain --kinds` prints the rule language.
-2. Edit `agent_lints.yaml`. A rule is one of `match:` / `banned:` / `imports:` /
-   `naming:` plus `message:` (with `{{placeholders}}`), `severity`, `files`,
+2. Edit `agent_lints.yaml`. A rule is one node key (`use`, `new`, `call`,
+   `class`, `deny_imports`, `file`, ...) with its attributes, `args:` and
+   context (`parent`, `inside`, `contains`, `except`) as sibling lines, plus
+   `message:` (with `{{placeholders}}`), `severity`, `include`, `exclude`,
    `use_instead`, `suggest`, `docs` and `examples: { bad: [..], good: [..] }`.
 3. `dart run agent_lints validate` reports every YAML problem with a hint.
 4. `dart run agent_lints test` runs the rule's examples: bad snippets must
