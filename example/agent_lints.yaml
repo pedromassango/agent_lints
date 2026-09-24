@@ -1,6 +1,6 @@
 # Rules for the example app. Each rule is exercised by lib/ and asserted by
 # expected_violations.json in the e2e tests.
-version: 1
+version: 2
 include: [lib/**]
 fail_on: warning
 docs: README.md
@@ -17,7 +17,8 @@ rules:
     severity: error
     exclude: [lib/core/log.dart]
     description: Use the app logger instead of print
-    match: { call: { name: print, package: dart:core } }
+    call: print
+    package: dart:core
     use_instead: AppLog.d(...) from package:agent_lints_example/core/log.dart
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
@@ -27,11 +28,9 @@ rules:
 
   no_gesture_detector_for_taps:
     description: Tap targets need ripple and semantics
-    match:
-      new:
-        name: GestureDetector
-        package: [flutter, material_ui]
-        args: { onTap: { present: true }, onPanUpdate: { present: false } }
+    new: GestureDetector
+    package: [flutter, material_ui]
+    args: { onTap: present, onPanUpdate: absent }
     use_instead: InkWell (ripple + semantics)
     suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
     message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
@@ -49,35 +48,31 @@ rules:
   features_no_material:
     severity: error
     description: Features use the app's own widget barrel
-    files: [lib/features/**]
-    match: { import: "package:flutter/material.dart" }
+    include: [lib/features/**]
+    import: "package:flutter/material.dart"
     use_instead: package:agent_lints_example/core/ui.dart
     message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
 
   http_only_in_network:
     severity: error
-    imports:
-      deny: [package:http/**, package:dio/**]
-      except: [lib/network/**]
+    deny_imports: [package:http/**, package:dio/**]
+    exclude: [lib/network/**]
     message: "Only lib/network may talk HTTP ({{denied}}). Use ApiClient from lib/network/api_client.dart."
 
   no_relative_imports:
-    imports: { deny: [relative] }
+    deny_imports: [relative]
     message: "Use package imports: {{uri}} -> {{package_path}}"
 
   screens_named_screen:
-    files: [lib/features/**]
-    naming:
-      target: class
-      where: { extends: StatefulWidget }
-      pattern: "*Screen"
+    include: [lib/features/**]
+    class: { extends: StatefulWidget }
+    name: { not: "*Screen" }
     message: "{{name}} is a StatefulWidget under lib/features and must end with Screen."
 
   no_setstate_in_build:
     severity: error
-    match:
-      call: { name: State.setState }
-      inside: { function: { name: build } }
+    call: State.setState
+    inside: { function: build }
     message: "setState inside build() causes rebuild loops. Move it to a handler or initState."
     examples:
       bad:
@@ -99,21 +94,20 @@ rules:
           }
 
   spacing_on_scale:
-    match:
-      new:
-        name: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
-        package: [flutter, material_ui]
-        args: { "*": { literal: num, not_in: $spacing } }
+    new: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+    package: [flutter, material_ui]
+    args: { "*": { literal: num, not_in: $spacing } }
     message: "{{value}} passed to {{name}}({{arg}}) is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
 
   no_palette_colors:
-    banned: { name: "Colors.*", package: [flutter, material_ui] }
+    use: "Colors.*"
+    package: [flutter, material_ui]
     use_instead: Theme.of(context).colorScheme
     message: "{{name}} is a raw palette color. Use {{use_instead}}."
 
   listview_in_column:
-    match:
-      new: { name: ListView, args: { shrinkWrap: { present: false } } }
-      inside: { new: { name: Column }, direct: true }
+    new: ListView
+    args: { shrinkWrap: absent }
+    parent: { new: Column }
     message: "ListView directly inside {{ancestor}} needs shrinkWrap: true or an Expanded wrapper."
