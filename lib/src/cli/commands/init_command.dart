@@ -120,7 +120,7 @@ class InitCommand extends Command<int> {
     required String packageName,
     required bool usesFlutter,
   }) {
-    final pkg = usesFlutter ? '[flutter, material_ui]' : 'project';
+    final pkg = usesFlutter ? 'flutter' : 'project';
     return '''
 # agent_lints.yaml — project rules for humans and coding agents.
 # Run:  dart run agent_lints            (check)
@@ -140,7 +140,7 @@ rules:
     severity: error
     description: Use the project logger instead of print
     call: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...)
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
@@ -151,8 +151,8 @@ rules:
   # --- Starters (uncomment and adapt) -----------------------------------
   #
   # no_gesture_detector_for_taps:
-  #   new: GestureDetector
-  #   package: $pkg
+  #   constructor: GestureDetector
+  #   from: $pkg
   #   args: { onTap: present, onPanUpdate: absent }
   #   use_instead: InkWell (ripple + semantics)
   #   message: "GestureDetector with only onTap has no ripple or semantics. Use {{use_instead}}."
@@ -181,7 +181,7 @@ rules:
   #   message: "{{name}} under lib/screens must end with Screen."
   #
   # spacing_on_scale:                  # design tokens
-  #   new: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+  #   constructor: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
   #   args: { "*": { literal: num, not_in: \$spacing } }
   #   message: "{{value}} is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
   #

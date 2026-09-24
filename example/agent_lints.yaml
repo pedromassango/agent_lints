@@ -18,7 +18,7 @@ rules:
     exclude: [lib/core/log.dart]
     description: Use the app logger instead of print
     call: print
-    package: dart:core
+    from: dart:core
     use_instead: AppLog.d(...) from package:agent_lints_example/core/log.dart
     suggest: "AppLog.d({{args.0}})"
     message: "`print` ships to release logs. Use {{use_instead}}."
@@ -28,8 +28,8 @@ rules:
 
   no_gesture_detector_for_taps:
     description: Tap targets need ripple and semantics
-    new: GestureDetector
-    package: [flutter, material_ui]
+    constructor: GestureDetector
+    from: flutter
     args: { onTap: present, onPanUpdate: absent }
     use_instead: InkWell (ripple + semantics)
     suggest: "InkWell(onTap: {{args.onTap}}, child: ...)"
@@ -94,20 +94,20 @@ rules:
           }
 
   spacing_on_scale:
-    new: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
-    package: [flutter, material_ui]
+    constructor: [EdgeInsets.all, EdgeInsets.symmetric, EdgeInsets.only]
+    from: flutter
     args: { "*": { literal: num, not_in: $spacing } }
     message: "{{value}} passed to {{name}}({{arg}}) is off the spacing scale. Allowed: {{allowed}}. Closest: {{closest}}."
     suggest: "{{name}}({{arg}}: {{closest.name}})"
 
   no_palette_colors:
     use: "Colors.*"
-    package: [flutter, material_ui]
+    from: flutter
     use_instead: Theme.of(context).colorScheme
     message: "{{name}} is a raw palette color. Use {{use_instead}}."
 
   listview_in_column:
-    new: ListView
+    constructor: ListView
     args: { shrinkWrap: absent }
-    parent: { new: Column }
+    parent: { constructor: Column }
     message: "ListView directly inside {{ancestor}} needs shrinkWrap: true or an Expanded wrapper."

@@ -7,7 +7,7 @@ rules:
   no_print:
     severity: error
     call: print
-    package: dart:core
+    from: dart:core
     message: "Write to the injected StringSink (out / err), never print."
     examples:
       bad: ["void f() { print('x'); }"]
