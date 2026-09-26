@@ -26,7 +26,7 @@ rules:
   no_print:
     severity: error
     description: Use the logger
-    include: [lib/features/**]
+    files: [lib/features/**]
     call: print
     package: dart:core
     use_instead: AppLog.d
@@ -103,7 +103,7 @@ no_print  (error)  Use the logger
 version: 2
 rules:
   no_print:
-    include: [lib/features/**]
+    files: [lib/features/**]
     call: print
     package: dart:core
     message: no print

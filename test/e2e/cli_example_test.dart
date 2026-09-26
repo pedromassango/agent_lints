@@ -79,6 +79,9 @@ void main() {
   test('validate reports the config as valid', () async {
     final result = await runCli(['validate']);
     expect(result.exitCode, 0);
-    expect(result.stdout, contains('agent_lints.yaml is valid: 10 rules'));
+    expect(
+      result.stdout,
+      contains('agent_lints.yaml is valid: 10 rules (10 enabled) from 2 files'),
+    );
   });
 }

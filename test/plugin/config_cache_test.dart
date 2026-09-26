@@ -25,9 +25,14 @@ rules:
     write('packages/app/pubspec.yaml', 'name: app\n');
     write('packages/app/agent_lints.yaml', '''
 version: 2
+include: [rules/*.yaml]
 rules:
   app_rule: { call: print, message: x }
 ''');
+    write(
+      'packages/app/rules/extra.yaml',
+      'rules:\n  extra_rule: { call: print, message: x }\n',
+    );
     write('packages/broken/agent_lints.yaml', 'version: 2\nrules: []\n');
     write('build/agent_lints.yaml', 'version: 2\nrules: {}\n');
   });
@@ -44,7 +49,7 @@ rules:
         'packages/broken/agent_lints.yaml',
       },
     );
-    expect(cache.knownRuleIds, {'top_rule', 'app_rule'});
+    expect(cache.knownRuleIds, {'top_rule', 'app_rule', 'extra_rule'});
     expect(
       found.where((f) => f.errors.isNotEmpty).single.configPath,
       endsWith('packages/broken/agent_lints.yaml'),
@@ -54,7 +59,10 @@ rules:
   test('forFile picks the nearest config and reloads on change', () async {
     final cache = ConfigCache();
     final appFile = p.join(root.path, 'packages/app/lib/a.dart');
-    expect(cache.forFile(appFile)!.config!.rules.single.id, 'app_rule');
+    expect(cache.forFile(appFile)!.config!.rules.map((r) => r.id), [
+      'extra_rule',
+      'app_rule',
+    ]);
     expect(
       cache.forFile(p.join(root.path, 'lib/a.dart'))!.config!.rules.single.id,
       'top_rule',

@@ -18,7 +18,7 @@ export 'package:flutter/widgets.dart';
     test('matches by uri glob with file scoping', () async {
       final v = await lint(
         rule('features_no_material', '''
-    include: [lib/features/**]
+    files: [lib/features/**]
     import: "package:flutter/material.dart"
     message: "{{uri}} from {{package}}"
 '''),

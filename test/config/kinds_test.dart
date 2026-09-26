@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
         rule('features_no_material', '''
     deny_imports: ["package:flutter/material.dart"]
     replace_with: package:test_app/ui.dart
-    include: [lib/features/**]
+    files: [lib/features/**]
     message: "{{uri}} -> {{use_instead}}"
 '''),
         files,
@@ -89,7 +89,7 @@ class HomeScreen extends StatelessWidget {
         rule('screens_named_screen', '''
     class: { extends: StatelessWidget }
     name: { not: "*Screen" }
-    include: [lib/screens/**]
+    files: [lib/screens/**]
     message: "{{name}} must end with Screen"
 '''),
         files,
