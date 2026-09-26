@@ -128,7 +128,8 @@ class InitCommand extends Command<int> {
 #       dart run agent_lints explain <rule> | --kinds
 #       dart run agent_lints test       (run each rule's examples)
 version: 2
-include: [lib/**]
+files: [lib/**]                     # code to lint
+# include: [agent_lints/*.yaml]     # split rules across files, merged like analysis_options.yaml
 fail_on: warning
 
 # Named lists you can reference as \$name in rules ({{allowed}} / {{closest}}).
@@ -160,7 +161,7 @@ rules:
   # features_no_material:              # layering
   #   severity: error
   #   deny_imports: [package:flutter/material.dart]
-  #   include: [lib/features/**]
+  #   files: [lib/features/**]
   #   replace_with: package:$packageName/ui/ui.dart
   #   message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
   #
@@ -177,7 +178,7 @@ rules:
   # screens_named_screen:              # naming
   #   class: { extends: StatefulWidget }
   #   name: { not: "*Screen" }
-  #   include: [lib/screens/**]
+  #   files: [lib/screens/**]
   #   message: "{{name}} under lib/screens must end with Screen."
   #
   # spacing_on_scale:                  # design tokens
@@ -320,7 +321,7 @@ Useful flags: `--changed` (files touched since the last commit),
 2. Edit `agent_lints.yaml`. A rule is one node key (`use`, `new`, `call`,
    `class`, `deny_imports`, `file`, ...) with its attributes, `args:` and
    context (`parent`, `inside`, `contains`, `except`) as sibling lines, plus
-   `message:` (with `{{placeholders}}`), `severity`, `include`, `exclude`,
+   `message:` (with `{{placeholders}}`), `severity`, `files`, `exclude`,
    `use_instead`, `hint`, `docs` and `examples: { bad: [..], good: [..] }`.
 3. `dart run agent_lints validate` reports every YAML problem with a hint.
 4. `dart run agent_lints test` runs the rule's examples: bad snippets must

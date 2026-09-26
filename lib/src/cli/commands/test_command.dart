@@ -113,7 +113,7 @@ class TestCommand extends Command<int> {
         rootPath: config.rootPath,
         configPath: config.configPath,
         packageName: config.packageName,
-        include: [compileGlob('$scratchDir/**')],
+        files: [compileGlob('$scratchDir/**')],
         exclude: const [],
         failOn: config.failOn,
         requireIgnoreReason: config.requireIgnoreReason,

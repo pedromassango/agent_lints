@@ -117,13 +117,14 @@ class CheckCommand extends Command<int> {
             rootPath: config.rootPath,
             configPath: config.configPath,
             packageName: config.packageName,
-            include: config.include,
+            files: config.files,
             exclude: config.exclude,
             failOn: config.failOn,
             requireIgnoreReason: config.requireIgnoreReason,
             docs: config.docs,
             values: config.values,
             rules: config.rules.where((r) => onlyRules.contains(r.id)).toList(),
+            sourcePaths: config.sourcePaths,
           );
 
     final only = (args['files'] as List<String>)

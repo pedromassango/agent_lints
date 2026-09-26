@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:path/path.dart' as p;
 
 import '../../config/config.dart';
 import '../../config/errors.dart';
@@ -100,9 +101,14 @@ class ExplainCommand extends Command<int> {
       '${rule.description == null ? '' : '  ${rule.description}'}',
     );
     _line(b, 'kind', rule.kind);
+    final source = rule.sourcePath;
+    if (source != null &&
+        p.normalize(source) != p.normalize(config.configPath)) {
+      _line(b, 'source', p.relative(source, from: config.rootPath));
+    }
     final scope = [
       if (rule.files.isEmpty)
-        config.include.map((g) => g.pattern).join(', ')
+        config.files.map((g) => g.pattern).join(', ')
       else
         rule.files.map((g) => g.pattern).join(', '),
       if (rule.exclude.isNotEmpty)

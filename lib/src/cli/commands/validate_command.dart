@@ -41,9 +41,11 @@ class ValidateCommand extends Command<int> {
         out.writeln('[warning] ${w.format()}');
       }
       final enabled = config.rules.where((r) => r.enabled).length;
+      final files = config.sourcePaths.length;
       out.writeln(
         'agent_lints.yaml is valid: ${config.rules.length} rule'
-        '${config.rules.length == 1 ? '' : 's'} ($enabled enabled), '
+        '${config.rules.length == 1 ? '' : 's'} ($enabled enabled)'
+        '${files > 1 ? ' from $files files' : ''}, '
         '${config.values.length} values list${config.values.length == 1 ? '' : 's'}.',
       );
       return ExitCodes.ok;
