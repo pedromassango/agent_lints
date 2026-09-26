@@ -218,7 +218,7 @@ rules:
   small_widget_files:
     file: { max_code_lines: 100 }
     contains: { class: { extends: Widget } }
-    message: "{{code_lines}} lines of code in a widget file; the limit is 100."
+    message: "{{code_lines}} lines of code ({{lines}} lines in total, blanks and comments excluded) in a widget file; the limit is 100 lines of code. Extract sub-widgets into their own files."
 ```
 
 More in [Recipes](recipes.md).
