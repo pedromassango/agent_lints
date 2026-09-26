@@ -54,7 +54,7 @@ need `args`, `on`, `await` or `type`.
 Write the node on one line when it has one or two attributes
 (`constructor: { name: Color, from: dart:ui }`) and use sibling lines for
 `args:` and context. A readable order: `severity`, the node line, `args` and
-context, `include` / `exclude`, then `use_instead`, `message`, `examples`.
+context, `files` / `exclude`, then `use_instead`, `message`, `examples`.
 
 ## Patterns
 
@@ -176,7 +176,7 @@ node and negate a property (`name: { not: "*Screen" }`, `absent`, `not_in`,
 | `severity` | `error` \| `warning` \| `info` \| `off` (default `warning`) |
 | `message` | optional; defaults to `` `{{found}}` is not allowed here. Use {{use_instead}}. `` |
 | `use_instead`, `hint`, `docs`, `description`, `vars` | see [placeholders](placeholders.md) |
-| `include`, `exclude` | file globs for this rule |
+| `files`, `exclude` | file globs for this rule |
 | `examples` | `bad:` and `good:` snippets for `dart run agent_lints test` |
 
 ## Examples
@@ -201,13 +201,13 @@ rules:
 
   features_no_material:
     deny_imports: [package:flutter/material.dart]
-    include: [lib/features/**]
+    files: [lib/features/**]
     replace_with: package:app/ui/ui.dart
 
   screens_named_screen:
     class: { extends: StatefulWidget }
     name: { not: "*Screen" }
-    include: [lib/screens/**]
+    files: [lib/screens/**]
     message: "{{name}} must end with Screen."
 
   const_widget_constructors:

@@ -67,7 +67,7 @@ after pasting.
   features_no_material:
     severity: error
     deny_imports: [package:flutter/material.dart, package:material_ui/**]
-    include: [lib/features/**]
+    files: [lib/features/**]
     replace_with: package:app/ui/ui.dart
     message: "{{uri}} must not be imported from feature code. Import {{use_instead}}, which re-exports the approved widgets."
 
@@ -84,7 +84,7 @@ after pasting.
   domain_has_no_flutter:
     severity: error
     deny_imports: ["package:flutter/**", "dart:ui"]
-    include: [lib/domain/**]
+    files: [lib/domain/**]
     message: "lib/domain is pure Dart. {{uri}} does not belong here."
 
   providers_in_provider_files:
@@ -101,7 +101,7 @@ after pasting.
   screens_named_screen:
     class: { extends: StatefulWidget }
     name: { not: "*Screen" }
-    include: [lib/screens/**]
+    files: [lib/screens/**]
     message: "{{name}} under lib/screens must end with Screen."
 
   snake_case_files:
@@ -112,7 +112,7 @@ after pasting.
     function: any
     kind: function
     name: { not: "/^_|^main$/" }
-    include: [lib/features/**]
+    files: [lib/features/**]
     message: "Top-level helper {{name}} in feature code should be private."
 ```
 
@@ -152,14 +152,14 @@ rules:
   no_raw_text_styles:
     constructor: TextStyle
     from: dart:ui
-    include: [lib/features/**]
+    files: [lib/features/**]
     use_instead: Theme.of(context).textTheme.* or AppTextStyles.*
     message: "Raw TextStyle in feature code. Use {{use_instead}}."
 
   no_adhoc_card:
     constructor: Container
     args: { decoration: { expr: { constructor: BoxDecoration, args: { color: present } } } }
-    include: [lib/features/**]
+    files: [lib/features/**]
     use_instead: AppCard
     message: "Ad-hoc surface: Container(decoration: BoxDecoration(color:)). Use {{use_instead}}; add a variant in lib/ui/card.dart if none fits."
 ```
@@ -183,6 +183,6 @@ rules:
     constructor: Text
     from: flutter
     args: { data: { literal: string } }
-    include: [lib/features/**]
+    files: [lib/features/**]
     message: "User-facing string {{args.data}} must come from context.l10n.*"
 ```

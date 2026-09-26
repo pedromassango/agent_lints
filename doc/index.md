@@ -41,7 +41,7 @@ is handled like `package:flutter`.
 ## Where to go next
 
 - [Getting started](getting-started.md): install, first rule, IDE setup, in five minutes.
-- [Configuration](configuration.md): every key of `agent_lints.yaml`.
+- [Configuration](configuration.md): every key of `agent_lints.yaml`, including `include:` to split rules across files.
 - [Rule language](rule-language.md): node keys, attributes, arguments, context, patterns.
 - [Placeholders](placeholders.md): everything a message can interpolate.
 - [CLI](cli.md): commands, flags, output formats, exit codes.

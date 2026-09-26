@@ -38,7 +38,8 @@ When asked to add a project convention:
 1. `dart run agent_lints explain --kinds` prints the rule language (node
    kinds, argument constraints, context keys, placeholders), generated from
    the installed version.
-2. Add a rule to `agent_lints.yaml`: one node key (`use` for "never use X",
+2. Add a rule to `agent_lints.yaml`, or to the file under `agent_lints/` that
+   holds related rules when the project uses `include:`. A rule is one node key (`use` for "never use X",
    `deny_imports` for layering, `class` / `function` / `file` with a `name`
    pattern for naming, `new` / `call` when arguments or context matter) plus
    `message` with what to do instead, and `examples` with at least one `bad`
@@ -55,7 +56,7 @@ Template:
   <rule_id>:
     severity: warning
     description: <one line>
-    include: [lib/**]
+    files: [lib/**]
     use: <symbol>                 # or new / call / class / deny_imports / file ...
     from: <package>
     use_instead: <what to write instead>

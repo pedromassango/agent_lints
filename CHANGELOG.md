@@ -1,3 +1,13 @@
+## Unreleased
+
+- `include:` merges other agent_lints files (paths, globs, `package:` URIs) the
+  way `analysis_options.yaml` does: in order, later wins, the main file last.
+  Split rules by area under `agent_lints/*.yaml` (#1).
+- Breaking: the code-scope key is `files:` (top level and per rule); `include:`
+  now means included config files.
+- `explain` shows the `source` file of an included rule; `validate` reports the
+  number of merged files.
+
 ## 0.2.0
 
 Breaking: the rule form is flat (config `version: 2`). One node key per rule

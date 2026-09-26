@@ -69,8 +69,8 @@ package with `dart pub get --no-example`.
   `flutter`. `Text` is from `flutter` even when imported through
   `package:material_ui`. Use lists: `package: [flutter, material_ui]`.
 - Generated files (`*.g.dart`, `*.freezed.dart`, ...) are always excluded.
-- The file is outside `include` (default `lib/**`) or excluded by the rule's
-  `include` / `exclude`. `explain` prints the effective scope.
+- The file is outside `files` (default `lib/**`) or excluded by the rule's
+  `files` / `exclude`. `explain` prints the effective scope.
 - The code does not resolve (missing `pub get`, broken import): unresolved
   calls match only by their written identifier and never by `package`.
 
@@ -104,5 +104,5 @@ key per rule with its attributes, `args:` and context as sibling lines. Set
 `constructor: X` and `args: {...}`; `banned: X` becomes `use: X`;
 `imports: { deny: [...] }` becomes `deny_imports: [...]`;
 `naming: { target: class, pattern: P }` becomes `class: any` with
-`name: { not: P }`; `files:` becomes `include:`. See
+`name: { not: P }`. See
 [rule language](rule-language.md).

@@ -57,7 +57,7 @@ Or write the file by hand:
 ```yaml
 # agent_lints.yaml
 version: 2
-include: [lib/**]
+files: [lib/**]
 fail_on: warning
 
 rules:

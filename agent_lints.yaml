@@ -1,6 +1,6 @@
 # agent_lints checks itself. Run: dart run agent_lints
 version: 2
-include: [lib/**, bin/**]
+files: [lib/**, bin/**]
 fail_on: warning
 
 rules:
@@ -21,11 +21,11 @@ rules:
   no_dart_io_in_engine:
     severity: error
     deny_imports: ["dart:io"]
-    include: [lib/src/engine/**, lib/src/match/**, lib/src/resolve/**, lib/src/report/**]
+    files: [lib/src/engine/**, lib/src/match/**, lib/src/resolve/**, lib/src/report/**]
     message: "The engine must not touch the file system; it runs inside the analysis server. Keep dart:io in lib/src/cli and lib/src/plugin."
 
   matchers_declare_keys:
-    include: [lib/src/match/matchers/**]
+    files: [lib/src/match/matchers/**]
     exclude: [lib/src/match/matchers/logic_matchers.dart, lib/src/match/matchers/context_matcher.dart, lib/src/match/matchers/element_filter.dart, lib/src/match/matchers/imports_rule_matcher.dart]
     class: { extends: Matcher }
     lacks: { variable: keys, static: true }

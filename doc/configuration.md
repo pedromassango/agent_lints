@@ -12,7 +12,7 @@ one above each analyzed file.
 
 ```yaml
 version: 2
-include: [lib/**]
+files: [lib/**]
 exclude: [lib/generated/**]
 fail_on: warning
 require_ignore_reason: false
@@ -33,8 +33,9 @@ rules:
 | Key | Type | Default | Meaning |
 |---|---|---|---|
 | `version` | int | required | Schema version. Only `2`. |
-| `include` | glob or list | `[lib/**]` | Files to check. `bin/**` and `test/**` are opt-in. |
-| `exclude` | glob or list | `[]` | Removed after `include`. The [always-excluded](#always-excluded) globs are added. |
+| `include` | path or list | `[]` | Other agent_lints files to merge in, like `include:` in `analysis_options.yaml`. Relative paths, globs, or `package:` URIs. See [Splitting rules across files](#splitting-rules-across-files). |
+| `files` | glob or list | `[lib/**]` | Code to check. `bin/**` and `test/**` are opt-in. |
+| `exclude` | glob or list | `[]` | Removed after `files`. The [always-excluded](#always-excluded) globs are added. |
 | `fail_on` | `error` \| `warning` \| `info` | `warning` | The CLI exits 1 when any violation has this severity or higher. Nothing else changes. `--fail-on none` disables it for one run. |
 | `require_ignore_reason` | bool | `false` | When true, an `// ignore:` comment without `-- reason` is itself reported as `ignore_without_reason` (warning). |
 | `docs` | path or URL | none | Default value of `{{docs}}` for rules that do not set their own. |
@@ -45,7 +46,7 @@ Unknown keys are errors with a did-you-mean hint.
 
 ### Always excluded
 
-Generated and build output never get checked, whatever `include` says:
+Generated and build output never get checked, whatever `files` says:
 
 ```
 **/*.g.dart  **/*.freezed.dart  **/*.gr.dart  **/*.pb.dart  **/*.pbenum.dart
@@ -95,7 +96,7 @@ rules:
 
     severity: warning            # error | warning | info | off
     description: "one line"      # shown by explain and in SARIF
-    include: [lib/features/**]   # narrows the top-level include for this rule
+    files: [lib/features/**]   # narrows the top-level include for this rule
     exclude: [lib/legacy/**]     # per-rule exclusions
     message: "..."               # optional; {{placeholders}} allowed
     use_instead: "..."           # what to write instead; feeds {{use_instead}} and the IDE correction
@@ -110,9 +111,49 @@ rules:
 | Field | Notes |
 |---|---|
 | `severity` | `off` disables the rule entirely. Default `warning`. |
-| `include` / `exclude` | Globs relative to the project. `include` is intersected with the top-level `include`. |
+| `files` / `exclude` | Globs relative to the project. `files` is intersected with the top-level `files`. |
 | `message` | Defaults to `` `{{found}}` is not allowed here. `` plus `Use {{use_instead}}.` when `use_instead` is set. Multi-line strings are fine; the IDE shows them on one line, the CLI keeps line breaks. Unknown placeholders are config errors. |
 | `examples` | Complete Dart snippets (with imports). They are written into a scratch folder inside the project so they resolve against its real dependencies. File scoping is ignored for them. |
+
+## Splitting rules across files
+
+`include:` works like `include:` in `analysis_options.yaml`: every included
+file is a complete agent_lints config, and files are merged in list order with
+later files overriding earlier ones and the including file overriding all of
+them. Name a folder once with a glob:
+
+```yaml
+# agent_lints.yaml
+version: 2
+include: [agent_lints/*.yaml]
+files: [lib/**]
+rules:                               # rules can still live here too
+  no_print: { use: print, from: dart:core }
+```
+
+```yaml
+# agent_lints/ui.yaml
+values:
+  spacing: [4, 8, 16]
+rules:
+  no_raw_colors: { constructor: { name: Color, from: dart:ui } }
+  spacing_on_scale:
+    constructor: [EdgeInsets.all, EdgeInsets.symmetric]
+    args: { "*": { literal: num, not_in: $spacing } }
+```
+
+- Entries are relative to the file that lists them: a path, a glob (matches
+  sorted by path), or `package:name/path.yaml` resolved through
+  `.dart_tool/package_config.json`. Included files may `include:` further
+  files; cycles are errors.
+- Merge, per section: `rules` by id (a later definition replaces the earlier
+  one; `severity: off` in the main file switches an included rule off);
+  `values` by name; `files`, `fail_on`, `docs`, `require_ignore_reason` take
+  the last value set; `exclude` accumulates.
+- `version` is required only in the main file. Errors report the file and
+  line they come from. A glob that matches nothing is a warning.
+- `dart run agent_lints explain <rule>` shows a `source` line for rules that
+  come from an included file; `validate` reports how many files were merged.
 
 ## Rule ids
 
