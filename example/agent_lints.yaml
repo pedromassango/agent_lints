@@ -1,7 +1,8 @@
 # Rules for the example app. Each rule is exercised by lib/ and asserted by
 # expected_violations.json in the e2e tests.
 version: 2
-include: [lib/**]
+include: [agent_lints/*.yaml]     # layering rules live in agent_lints/layering.yaml
+files: [lib/**]
 fail_on: warning
 docs: README.md
 
@@ -45,26 +46,8 @@ rules:
           final a = InkWell(onTap: () {}, child: const Text('x'));
           final b = GestureDetector(onTap: () {}, onPanUpdate: (_) {}, child: const Text('drag'));
 
-  features_no_material:
-    severity: error
-    description: Features use the app's own widget barrel
-    include: [lib/features/**]
-    import: "package:flutter/material.dart"
-    use_instead: package:agent_lints_example/core/ui.dart
-    message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
-
-  http_only_in_network:
-    severity: error
-    deny_imports: [package:http/**, package:dio/**]
-    exclude: [lib/network/**]
-    message: "Only lib/network may talk HTTP ({{denied}}). Use ApiClient from lib/network/api_client.dart."
-
-  no_relative_imports:
-    deny_imports: [relative]
-    message: "Use package imports: {{uri}} -> {{package_path}}"
-
   screens_named_screen:
-    include: [lib/features/**]
+    files: [lib/features/**]
     class: { extends: StatefulWidget }
     name: { not: "*Screen" }
     message: "{{name}} is a StatefulWidget under lib/features and must end with Screen."

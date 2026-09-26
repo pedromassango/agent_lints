@@ -1,0 +1,20 @@
+# Import and layering rules for the example app, merged into agent_lints.yaml
+# through its `include:` entry.
+rules:
+  features_no_material:
+    severity: error
+    description: Features use the app's own widget barrel
+    files: [lib/features/**]
+    import: "package:flutter/material.dart"
+    use_instead: package:agent_lints_example/core/ui.dart
+    message: "{{uri}} must not be imported from feature code. Import {{use_instead}}."
+
+  http_only_in_network:
+    severity: error
+    deny_imports: [package:http/**, package:dio/**]
+    exclude: [lib/network/**]
+    message: "Only lib/network may talk HTTP ({{denied}}). Use ApiClient from lib/network/api_client.dart."
+
+  no_relative_imports:
+    deny_imports: [relative]
+    message: "Use package imports: {{uri}} -> {{package_path}}"
