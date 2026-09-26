@@ -1,8 +1,8 @@
 ## 0.2.0
 
 Breaking: the rule form is flat (config `version: 2`). One node key per rule
-(`use`, `new`, `call`, `ref`, `import`, `deny_imports`, `class`, `function`,
-`variable`, `literal`, `file`); attributes, `args:` and context (`parent`,
+(`use`, `constructor`, `call`, `ref`, `import`, `deny_imports`, `class`,
+`function`, `variable`, `literal`, `file`); attributes, `args:` and context (`parent`,
 `inside`, `not_inside`, `contains`, `not_contains`, `except`) are sibling
 lines; no `match:` wrapper. `banned` is `use`, `imports` is `deny_imports`,
 `naming` is a name pattern (`{ not: .. }`, `{ not_style: snake_case }`) on
