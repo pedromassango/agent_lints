@@ -26,14 +26,15 @@ class AgentLintsConfig {
     required this.rootPath,
     required this.configPath,
     required this.packageName,
-    required this.include,
+    required this.files,
     required this.exclude,
     required this.failOn,
     required this.requireIgnoreReason,
     required this.docs,
     required this.values,
     required this.rules,
-  });
+    List<String>? sourcePaths,
+  }) : sourcePaths = sourcePaths ?? [configPath];
 
   /// Absolute directory that holds the config file. All globs are relative.
   final String rootPath;
@@ -41,7 +42,9 @@ class AgentLintsConfig {
 
   /// The analyzed package's name (from pubspec.yaml), or null when unknown.
   final String? packageName;
-  final List<Glob> include;
+
+  /// Globs of the code to lint (top-level `files:`).
+  final List<Glob> files;
   final List<Glob> exclude;
   final Severity failOn;
   final bool requireIgnoreReason;
@@ -49,7 +52,10 @@ class AgentLintsConfig {
   final Map<String, ValueList> values;
   final List<CompiledRule> rules;
 
-  static const defaultInclude = ['lib/**'];
+  /// Every config file that contributed, in load order; the main file last.
+  final List<String> sourcePaths;
+
+  static const defaultFiles = ['lib/**'];
 
   static const alwaysExcluded = [
     '**/*.g.dart',
@@ -65,11 +71,11 @@ class AgentLintsConfig {
     'agent_lints_examples_tmp/**',
   ];
 
-  /// Whether [absolutePath] is inside the project and selected by include/exclude.
+  /// Whether [absolutePath] is inside the project and selected by files/exclude.
   bool includesFile(String absolutePath) {
     final rel = relativePath(absolutePath);
     if (rel == null) return false;
-    if (!include.any((g) => g.matches(rel))) return false;
+    if (!files.any((g) => g.matches(rel))) return false;
     if (exclude.any((g) => g.matches(rel))) return false;
     return true;
   }

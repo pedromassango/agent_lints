@@ -20,7 +20,9 @@ class LoadedProject {
   });
 
   final String configPath;
-  final DateTime modified;
+
+  /// Modification time of every file that contributed to the config.
+  final Map<String, DateTime> modified;
   final AgentLintsConfig? config;
   final Engine? engine;
   final List<ConfigError> errors;
@@ -103,15 +105,27 @@ class ConfigCache {
       _byRoot.remove(root);
       return null;
     }
-    final modified = file.lastModifiedSync();
     final cached = _byRoot[root];
-    if (cached != null && cached.modified == modified) return cached;
-    final loaded = _load(project, modified);
+    if (cached != null && _unchanged(cached.modified)) return cached;
+    final loaded = _load(project);
     _byRoot[root] = loaded;
     return loaded;
   }
 
-  LoadedProject _load(Project project, DateTime modified) {
+  static bool _unchanged(Map<String, DateTime> stamps) {
+    for (final e in stamps.entries) {
+      final f = File(e.key);
+      if (!f.existsSync() || f.lastModifiedSync() != e.value) return false;
+    }
+    return true;
+  }
+
+  static Map<String, DateTime> _stamps(Iterable<String> paths) => {
+    for (final path in paths)
+      if (File(path).existsSync()) path: File(path).lastModifiedSync(),
+  };
+
+  LoadedProject _load(Project project) {
     try {
       final config = ConfigLoader().load(
         content: File(project.configPath).readAsStringSync(),
@@ -122,14 +136,14 @@ class ConfigCache {
       knownRuleIds.addAll(config.rules.map((r) => r.id));
       return LoadedProject(
         configPath: project.configPath,
-        modified: modified,
+        modified: _stamps(config.sourcePaths),
         config: config,
         engine: Engine(config),
       );
     } on ConfigException catch (e) {
       return LoadedProject(
         configPath: project.configPath,
-        modified: modified,
+        modified: _stamps([project.configPath, ...e.sourcePaths]),
         errors: e.errors,
       );
     }

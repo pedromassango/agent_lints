@@ -21,6 +21,7 @@ class CompiledRule {
     this.exclude = const [],
     this.examplesBad = const [],
     this.examplesGood = const [],
+    this.sourcePath,
   });
 
   final String id;
@@ -40,25 +41,32 @@ class CompiledRule {
   final List<String> examplesBad;
   final List<String> examplesGood;
 
+  /// Absolute path of the config file the rule was defined in.
+  final String? sourcePath;
+
   bool get enabled => severity != Severity.off;
 
-  CompiledRule copyWith({List<Glob>? files, List<Glob>? exclude}) =>
-      CompiledRule(
-        id: id,
-        kind: kind,
-        severity: severity,
-        matcher: matcher,
-        message: message,
-        description: description,
-        hint: hint,
-        useInstead: useInstead,
-        docs: docs,
-        vars: vars,
-        files: files ?? this.files,
-        exclude: exclude ?? this.exclude,
-        examplesBad: examplesBad,
-        examplesGood: examplesGood,
-      );
+  CompiledRule copyWith({
+    List<Glob>? files,
+    List<Glob>? exclude,
+    String? sourcePath,
+  }) => CompiledRule(
+    id: id,
+    kind: kind,
+    severity: severity,
+    matcher: matcher,
+    message: message,
+    description: description,
+    hint: hint,
+    useInstead: useInstead,
+    docs: docs,
+    vars: vars,
+    files: files ?? this.files,
+    exclude: exclude ?? this.exclude,
+    examplesBad: examplesBad,
+    examplesGood: examplesGood,
+    sourcePath: sourcePath ?? this.sourcePath,
+  );
 
   /// Whether the rule runs on a project-relative posix path.
   bool appliesTo(String relativePath) {

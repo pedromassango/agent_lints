@@ -44,9 +44,13 @@ class ConfigError {
 
 /// Thrown when the config cannot be used. Carries every error found.
 class ConfigException implements Exception {
-  ConfigException(this.errors);
+  ConfigException(this.errors, {this.sourcePaths = const []});
 
   final List<ConfigError> errors;
+
+  /// Config files that were read before the failure, so callers can watch
+  /// them for changes.
+  final List<String> sourcePaths;
 
   @override
   String toString() => errors.map((e) => e.format()).join('\n');
@@ -67,7 +71,12 @@ class ConfigErrors {
     warnings.add(ConfigError(message, span: span, path: path, hint: hint));
   }
 
-  void throwIfAny() {
-    if (hasErrors) throw ConfigException(List.unmodifiable(errors));
+  void throwIfAny({List<String> sourcePaths = const []}) {
+    if (hasErrors) {
+      throw ConfigException(
+        List.unmodifiable(errors),
+        sourcePaths: sourcePaths,
+      );
+    }
   }
 }
